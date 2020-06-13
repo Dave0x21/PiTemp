@@ -110,7 +110,7 @@ def index():
     end = datetime.datetime.now()
     start = end - datetime.timedelta(hours=24)
 
-    get_data('SELECT * FROM (SELECT * FROM pitemp ORDER BY ID DESC LIMIT 1440) ORDER BY ID ASC;') # Get last 97 row (24 bours)
+    get_data("SELECT * FROM pitemp WHERE time >= datetime('now', '-24 hours', 'localtime')")
     return render_template("index.html", current_reading=CURRENT_READING, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
 
 
@@ -143,11 +143,7 @@ def custom_view():
         days[0] = datetime.datetime.strptime(days[0], '%b %d %Y')
         days[1] = datetime.datetime.strptime(days[1], '%b %d %Y')
         
-        query = "SELECT * from pitemp WHERE (time LIKE '{}%'".format(datetime.datetime.strftime(days[1], "%Y-%m-%d"))
-        for i in range(1, (days[1]-days[0]).days + 1):
-            day = days[1] - datetime.timedelta(days=i)
-            query += " OR time LIKE '{}%'".format(datetime.datetime.strftime(day, "%Y-%m-%d"))
-        query += ")"
+        query = "SELECT * from pitemp WHERE time BETWEEN '{}' AND '{}'".format(datetime.datetime.strftime(days[0], "%Y-%m-%d"), datetime.datetime.strftime(days[1], "%Y-%m-%d"))
 
         get_data(query)
 
@@ -155,12 +151,8 @@ def custom_view():
     else:
         end = datetime.datetime.now()
         start = end - datetime.timedelta(days=6)
-        query = "SELECT * from pitemp WHERE (time LIKE '{}%'".format(datetime.datetime.strftime(end, "%Y-%m-%d"))
+        query = "SELECT * FROM pitemp WHERE time >= datetime('now', '-6 days', 'localtime')"
         
-        for i in range(1,(end-start).days + 1):
-            day = end - datetime.timedelta(days=i)
-            query += " OR time LIKE '{}%'".format(datetime.datetime.strftime(day, "%Y-%m-%d"))
-        query += ")"
         get_data(query)
 
         date = [datetime.datetime.strftime(start, "%b %d %Y"), datetime.datetime.strftime(end, "%b %d %Y")]

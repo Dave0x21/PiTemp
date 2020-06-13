@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+  <title>PiTemp | Giorni</title>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css" />
+  <!-- Theme style -->
+  <link rel="stylesheet" href="dist/css/adminlte.min.css" />
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet" />
+</head>
+
+<body class="hold-transition sidebar-mini sidebar-collapse">
+  <!-- Main Wrapper -->
+  <div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-dark navbar-light">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="/" class="nav-link">Home</a>
+        </li>
+      </ul>
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="/" class="brand-link">
+        <img src="dist/img/AdminLTELogo.png" alt="PiTemp Logo" class="brand-image img-circle elevation-3"
+          style="opacity: 0.8;" />
+        <span class="brand-text font-weight-light">PiTemp</span>
+      </a>
+      <!-- / .brand logo -->
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <li class="nav-item has-treeview">
+              <a href="/" class="nav-link">
+                <i class="nav-icon fas fa-home"></i>
+                <p>
+                  Home
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/day_view" class="nav-link active">
+                <i class="nav-icon fas fa-calendar-day"></i>
+                <p>
+                  Giorni
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/custom_view" class="nav-link">
+                <i class="nav-icon fas fa-calendar-week"></i>
+                <p>
+                  Periodo Personalizzato
+                </p>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+    <!-- /. main sidebar container -->
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1 id="day_title" class="m-0 text-dark">{{ day }}</h1>
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="container-fluid">
+          <!-- Calendar -->
+          <div class="card bg-gradient-info">
+            <div class="card-header border-0">
+
+              <h3 class="card-title">
+                <i class="far fa-calendar-alt"></i> Calendario
+              </h3>
+              <!-- tools card -->
+              <div class="card-tools">
+                <!-- button with a dropdown -->
+                <button type="button" class="btn btn-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+              <!-- /. tools -->
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body pt-0">
+              <!--The calendar -->
+              <div id="calendar" style="width: 100%"></div>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+
+          <!-- Chart-->
+          <div class="row">
+            <div class="col-12">
+              <!-- Temperature Chart -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="fas fa-thermometer-full"></i> Temperatura
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="chart">
+                    <canvas id="tempChart" style="
+                                      min-height: 250px;
+                                      height: 250px;
+                                      max-height: 250px;
+                                      max-width: 100%;
+                                    "></canvas>
+                  </div>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.temperature chart -->
+            </div>
+
+            <div class="col-12">
+              <!-- Humidity Chart -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="fas fa-tint"></i> Umidità
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="chart">
+                    <canvas id="umidChart" style="
+                                      min-height: 250px;
+                                      height: 250px;
+                                      max-height: 250px;
+                                      max-width: 100%;
+                                    "></canvas>
+                  </div>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.humidity chart -->
+            </div>
+
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <!-- Lux Chart -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="fas fa-sun"></i> Luce
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="chart">
+                    <canvas id="luxChart" style="
+                                      min-height: 250px;
+                                      height: 250px;
+                                      max-height: 250px;
+                                      max-width: 100%;
+                                    "></canvas>
+                  </div>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.lux chart -->
+            </div>
+          </div>
+          <!-- ./chart -->
+
+          <!-- Table-->
+          <div class="row">
+            <div class="col-md-6">
+              <!-- Min/Max Table -->
+              <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Min</th>
+                        <th style="width: 40px">Max</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Temperatura</td>
+                        <td><a id="min_temp">{{ min_max.temp[0] }}</a><sup>°C</sup></td>
+                        <td><a id="max_temp">{{ min_max.temp[1] }}</a><sup>°C</sup></td>
+                      </tr>
+                      <tr>
+                        <td>Umidità</td>
+                        <td><a id="min_hum">{{ min_max.hum[0] }}</a><sup>%</sup></td>
+                        <td><a id="max_hum">{{ min_max.hum[1] }}</a><sup>%</sup></td>
+                      </tr>
+                      <tr>
+                        <td>Luce</td>
+                        <td><a id="min_lux">{{ min_max.lux[0] }}</a><sup>lx</sup></td>
+                        <td><a id="max_lux">{{ min_max.lux[1] }}</a><sup>lx</sup></td>
+                      </tr>
+                      <tr>
+                        <td>Pressione</td>
+                        <td><a id="min_pres">{{ min_max.pres[0] }}</a><sup>hPa</sup></td>
+                        <td><a id="max_pres">{{ min_max.pres[1] }}</a><sup>hPa</sup></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.min max table -->
+            </div>
+
+            <div class="col-md-6">
+              <!-- Media Table -->
+              <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th style="width: 40px">Media</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Temperatura</td>
+                        <td><a id="media_temp">{{ media.temp }}</a><sup>°C</sup></td>
+                      </tr>
+                      <tr>
+                        <td>Umidità</td>
+                        <td><a id="media_hum">{{ media.hum }}</a><sup>%</sup></td>
+                      </tr>
+                      <tr>
+                        <td>Luce</td>
+                        <td><a id="media_lux">{{ media.lux }}</a><sup>lx</sup></td>
+                      </tr>
+                      <tr>
+                        <td>Pressione</td>
+                        <td><a id="media_pres">{{ media.pres }}</a><sup>hPa</sup></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.card -->
+            </div>
+          </div>
+          <!-- ./table -->
+        </div>
+      </section>
+      <!-- ./main content-->
+    </div>
+    <!-- /. Content wrapper -->
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+      <!-- To the right -->
+      <div class="float-right d-none d-sm-block"></div>
+      <!-- Default to the left -->
+      <strong>Copyright &copy; 2020 <a href="https://galassodavide.ddns.net">Dave0x21</a>.</strong> All rights reserved.
+    </footer>
+    <!-- ./main footer -->
+
+  </div>
+  <!-- ./main wrapper -->
+
+  <!-- REQUIRED SCRIPTS -->
+  <!-- jQuery -->
+  <script src="plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="dist/js/adminlte.min.js"></script>
+  <!-- ChartJS -->
+  <script src="plugins/moment/moment.min.js"></script>
+  <script src="plugins/chart.js/Chart.min.js"></script>
+  <!-- Tempusdominus Bootstrap 4 -->
+  <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+  <!-- Custom JS -->
+  <script>
+    $(function () {
+      // The Calender
+      $('#calendar').datetimepicker({
+        date: moment('{{ day }}', "MMM DD YYYY"),
+        maxDate: moment().add(-1, 'days'),
+        inline: true,
+      });
+      $('#calendar').on("change.datetimepicker", function (e) {
+        var date = { "data": String(e.date._d) };
+        fetch('/day_view', {
+          method: 'POST',
+          body: JSON.stringify(date.data)
+        }).then(function (response) {
+          return response.json();
+        }).then(function (response) {
+          document.getElementById('day_title').innerHTML = response.day;
+          document.getElementById('media_temp').innerHTML = response.media.temp;
+          document.getElementById('media_hum').innerHTML = response.media.hum;
+          document.getElementById('media_lux').innerHTML = response.media.lux;
+          document.getElementById('media_pres').innerHTML = response.media.pres;
+
+          document.getElementById('min_temp').innerHTML = response.min_max.temp[0];
+          document.getElementById('max_temp').innerHTML = response.min_max.temp[1];
+          document.getElementById('min_hum').innerHTML = response.min_max.hum[0];
+          document.getElementById('max_hum').innerHTML = response.min_max.hum[1];
+          document.getElementById('min_lux').innerHTML = response.min_max.lux[0];
+          document.getElementById('max_lux').innerHTML = response.min_max.lux[1];
+          document.getElementById('min_pres').innerHTML = response.min_max.pres[0];
+          document.getElementById('max_pres').innerHTML = response.min_max.pres[1];
+
+          for (var i = 0; i < response.chart.time.length; i++) {
+            response.chart.time[i] = moment(response.chart.time[i], "DD-MM-YYYY HH:mm");
+          }
+
+          temp_chart(response.chart.time, response.chart.temp, ChartOptions);
+          hum_chart(response.chart.time, response.chart.hum, ChartOptions);
+          lux_chart(response.chart.time, response.chart.lux, ChartOptions);
+        });
+      });
+
+      //--------------
+      //- AREA CHART -
+      //--------------
+      function temp_chart(label, data, ChartOptions) {
+        var tempChartCanvas = $("#tempChart").get(0).getContext("2d");
+
+        var tempChartData = {
+          labels: label,
+          datasets: [
+            {
+              label: "Temperatura",
+              backgroundColor: "rgba(23,162,184,0.5)",
+              borderColor: "rgba(23,162,184,1)",
+              pointRadius: false,
+              pointColor: "#3b8bba",
+              pointStrokeColor: "rgba(23,162,184,1)",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(23,162,184,1)",
+              data: data,
+            },
+          ],
+        };
+
+        var tempChart = new Chart(tempChartCanvas, {
+          type: "line",
+          data: tempChartData,
+          options: ChartOptions,
+        });
+      };
+
+      function hum_chart(label, data, ChartOptions) {
+        var umidChartCanvas = $("#umidChart").get(0).getContext("2d");
+
+        var umidChartData = {
+          labels: label,
+          datasets: [
+            {
+              label: "Umidità",
+              backgroundColor: "rgba(40,167,69,0.5)",
+              borderColor: "rgba(40,167,69,1)",
+              pointRadius: false,
+              pointColor: "rgba(40,167,69,1)",
+              pointStrokeColor: "#c1c7d1",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(40,167,69,1)",
+              data: data,
+            },
+          ],
+        };
+
+        var umidChart = new Chart(umidChartCanvas, {
+          type: "line",
+          data: umidChartData,
+          options: ChartOptions,
+        });
+      };
+
+      function lux_chart(label, data, ChartOptions) {
+        var luxChartCanvas = $("#luxChart").get(0).getContext("2d");
+
+        var luxChartData = {
+          labels: label,
+          datasets: [
+            {
+              label: "Luce",
+              backgroundColor: "rgba(255,193,7,0.5)",
+              borderColor: "rgba(255,193,7,1)",
+              pointRadius: false,
+              pointColor: "#3b8bba",
+              pointStrokeColor: "rgba(255,193,7,1)",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(255,193,7,1)",
+              data: data,
+            },
+          ],
+        };
+
+        var luxChart = new Chart(luxChartCanvas, {
+          type: "line",
+          data: luxChartData,
+          options: ChartOptions,
+        });
+      };
+
+
+      var graph_values = '{{ graph_values|tojson }}';
+      graph_values = JSON.parse(graph_values);
+
+      for (var i = 0; i < graph_values.time.length; i++) {
+        graph_values.time[i] = moment(graph_values.time[i], "DD-MM-YYYY HH:mm");
+      }
+
+      var ChartOptions = {
+        maintainAspectRatio: false,
+        responsive: true,
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+              unit: 'hour',
+              stepSize: 1,
+              displayFormats: {
+                hour: "HH:mm"
+              },
+              tooltipFormat: "D MMM HH:mm",
+            }
+          }],
+          yAxes: [
+            {
+              gridLines: {
+                display: true,
+              },
+              ticks: {
+                beginAtZero: false,
+              }
+            },
+          ],
+        },
+      };
+
+      temp_chart(graph_values.time, graph_values.temp, ChartOptions);
+      hum_chart(graph_values.time, graph_values.hum, ChartOptions);
+      lux_chart(graph_values.time, graph_values.lux, ChartOptions);
+    });
+  </script>
+</body>
+
+</html>

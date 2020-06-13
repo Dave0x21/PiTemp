@@ -13,7 +13,7 @@ from flask import (Flask, Response, jsonify, render_template, request,
                    send_from_directory, url_for)
 from werkzeug.serving import make_server
 
-CURRENT_READING  =  {"temp": 0, "hum": 0, "lux": 0, "pres": 0}
+CURRENT_READING  =  {"temp": 0, "hum": 0, "lux": 0, "pres": 0, "trend": ""}
 GRAPH_VALUES     =  {"temp": [], "hum": [], "lux": [], "pres": [], "time": []}
 MIN_MAX          =  {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}
 MEDIA            =  {"temp": 0, "hum": 0, "lux": 0, "pres": 0}
@@ -68,7 +68,7 @@ def get_data(query):
         GRAPH_VALUES['hum'].append(row[3])
         GRAPH_VALUES['lux'].append(row[4])
         GRAPH_VALUES['pres'].append(row[5])
-
+        CURRENT_READING['trend'] = row[6]
     
     try:
         MEDIA['temp'] = "{:.1f}".format(sum(GRAPH_VALUES['temp']) / float(len(GRAPH_VALUES['temp'])))

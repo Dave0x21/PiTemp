@@ -468,7 +468,7 @@
       graph_values = JSON.parse(graph_values);
 
       for (var i = 0; i < graph_values.time.length; i++) {
-        graph_values.time[i] = moment(graph_values.time[i], "DD-MM-YYYY HH:mm");
+        graph_values.time[i] = moment(graph_values.time[i], "YYYY-MM-DD HH:mm");
       }
 
       var ChartOptions = {
@@ -517,7 +517,7 @@
           document.getElementById('curr_hum').innerHTML = response.hum;
           document.getElementById('curr_lux').innerHTML = response.lux;
           document.getElementById('curr_pres').innerHTML = response.pres;
-          now = moment(response.time, "DD-MM-YYYY HH:mm");
+          now = moment(response.time, "YYYY-MM-DD HH:mm");
           tempChart.data.labels.push(now);
           tempChart.data.datasets.forEach((dataset) => {
             dataset.data.push(response.temp);

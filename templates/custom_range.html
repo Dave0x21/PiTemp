@@ -375,7 +375,7 @@
                     document.getElementById('max_pres').innerHTML = response.min_max.pres[1];
 
                     for (var i = 0; i < response.chart.time.length; i++) {
-                        response.chart.time[i] = moment(response.chart.time[i], "DD-MM-YYYY HH:mm");
+                        response.chart.time[i] = moment(response.chart.time[i], "YYYY-MM-DD HH:mm");
                     }
 
                     temp_chart(response.chart.time, response.chart.temp, ChartOptions);
@@ -473,7 +473,7 @@
             graph_values = JSON.parse(graph_values);
 
             for (var i = 0; i < graph_values.time.length; i++) {
-                graph_values.time[i] = moment(graph_values.time[i], "DD-MM-YYYY HH:mm");
+                graph_values.time[i] = moment(graph_values.time[i], "YYYY-MM-DD HH:mm");
             }
 
             var ChartOptions = {

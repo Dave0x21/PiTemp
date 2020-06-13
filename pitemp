@@ -53,7 +53,7 @@ def db_write():
     time.sleep(10)  # Sleep some seconds to adjust measurements
     while True:
         now = datetime.now()
-        now = datetime.strftime(now, "%d-%m-%Y %H:%M")
+        now = datetime.strftime(now, "%Y-%m-%d %H:%M")
         temp = float("{:.1f}".format(corr_temperature))
         measurement = (now, temp, int(corr_humidity),
                        int(light), int(pressure), trend)

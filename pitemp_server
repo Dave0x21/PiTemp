@@ -6,6 +6,7 @@ import logging
 import signal
 import sqlite3
 import sys
+from dateutil import parser
 from threading import Condition, Event, Thread
 from time import sleep
 
@@ -57,6 +58,15 @@ class WebServerThread(Thread):
         logging.info('Stopping PiTemp server')
         self.srv.shutdown()
 
+
+def date_parse(s):
+    ''' Converts a string to a date '''
+    try:
+        t = parser.parse(s, parser.parserinfo(dayfirst=True))
+        return t.strftime('%Y-%m-%d %H:%M')
+    except:
+        return None
+
 def get_data(query):
     global GRAPH_VALUES, MIN_MAX, MEDIA, CURRENT_READING
     GRAPH_VALUES = {"temp": [], "hum": [], "lux": [], "pres": [], "time": []}
@@ -97,6 +107,9 @@ def get_data(query):
 
 @app.route("/")
 def index():
+    end = datetime.datetime.now()
+    start = end - datetime.timedelta(hours=24)
+
     get_data('SELECT * FROM (SELECT * FROM pitemp ORDER BY ID DESC LIMIT 1440) ORDER BY ID ASC;') # Get last 97 row (24 bours)
     return render_template("index.html", current_reading=CURRENT_READING, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
 
@@ -109,13 +122,13 @@ def day_view():
         day = ' '.join(day)
 
         date = datetime.datetime.strptime(day, '%b %d %Y')
-        query = "SELECT * from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%d-%m-%y"))
+        query = "SELECT * from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%Y-%m-%d"))
         get_data(query)
 
         return jsonify({"day": day, "media": MEDIA, "chart": GRAPH_VALUES, "min_max": MIN_MAX}), 200
     else:
         date = datetime.datetime.now() - datetime.timedelta(days=1)
-        query = "SELECT * from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%d-%m-%y"))
+        query = "SELECT * from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%Y-%m-%d"))
         date = datetime.datetime.strftime(date, "%b %d %Y")
         get_data(query)
         return render_template("day.html", day=date, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
@@ -130,10 +143,10 @@ def custom_view():
         days[0] = datetime.datetime.strptime(days[0], '%b %d %Y')
         days[1] = datetime.datetime.strptime(days[1], '%b %d %Y')
         
-        query = "SELECT * from pitemp WHERE (time LIKE '{}%'".format(datetime.datetime.strftime(days[1], "%d-%m-%Y"))
+        query = "SELECT * from pitemp WHERE (time LIKE '{}%'".format(datetime.datetime.strftime(days[1], "%Y-%m-%d"))
         for i in range(1, (days[1]-days[0]).days + 1):
             day = days[1] - datetime.timedelta(days=i)
-            query += " OR time LIKE '{}%'".format(datetime.datetime.strftime(day, "%d-%m-%Y"))
+            query += " OR time LIKE '{}%'".format(datetime.datetime.strftime(day, "%Y-%m-%d"))
         query += ")"
 
         get_data(query)
@@ -142,11 +155,11 @@ def custom_view():
     else:
         end = datetime.datetime.now()
         start = end - datetime.timedelta(days=6)
-        query = "SELECT * from pitemp WHERE (time LIKE '{}%'".format(datetime.datetime.strftime(end, "%d-%m-%Y"))
+        query = "SELECT * from pitemp WHERE (time LIKE '{}%'".format(datetime.datetime.strftime(end, "%Y-%m-%d"))
         
         for i in range(1,(end-start).days + 1):
             day = end - datetime.timedelta(days=i)
-            query += " OR time LIKE '{}%'".format(datetime.datetime.strftime(day, "%d-%m-%Y"))
+            query += " OR time LIKE '{}%'".format(datetime.datetime.strftime(day, "%Y-%m-%d"))
         query += ")"
         get_data(query)
 

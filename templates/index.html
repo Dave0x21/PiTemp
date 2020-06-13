@@ -362,8 +362,8 @@
   <!-- Custom JS -->
   <script>
     $(function () {
-      var trend = '{{ current_reading.trend }}';
-      switch (trend){
+      var trend = '{{ current_reading.trend|tojson }}';
+      switch (JSON.parse(trend)){
         case '>':
          document.getElementById("trend").classList.add('fa-caret-up');
          break;

@@ -98,7 +98,7 @@ def get_data(query):
 @app.route("/")
 def index():
     get_data('SELECT * FROM (SELECT * FROM pitemp ORDER BY ID DESC LIMIT 1440) ORDER BY ID ASC;') # Get last 97 row (24 bours)
-    return render_template("/var/www/pitemp/index.html", current_reading=CURRENT_READING, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
+    return render_template("index.html", current_reading=CURRENT_READING, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
 
 
 @app.route("/day_view", methods=['GET', 'POST'])
@@ -118,7 +118,7 @@ def day_view():
         query = "SELECT * from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%d-%m-%y"))
         date = datetime.datetime.strftime(date, "%b %d %Y")
         get_data(query)
-        return render_template("/var/www/pitemp/day.html", day=date, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
+        return render_template("day.html", day=date, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
 
 
 @app.route("/custom_view", methods=['GET', 'POST'])
@@ -151,7 +151,7 @@ def custom_view():
         get_data(query)
 
         date = [datetime.datetime.strftime(start, "%b %d %Y"), datetime.datetime.strftime(end, "%b %d %Y")]
-        return render_template("/var/www/pitemp/custom_range.html", days=date, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
+        return render_template("custom_range.html", days=date, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
 
 @app.route("/update", methods=["POST"])
 def curr_update():

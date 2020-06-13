@@ -148,7 +148,7 @@
               <!-- small box -->
               <div class="small-box bg-danger">
                 <div class="inner">
-                  <h3><i id="trend" class="fas"></i><a id="curr_pres">{{ current_reading.pres }}</a><sup style="font-size: 20px;">hPa</sup></h3>
+                  <h3><i id="trend" class="fas"></i> <a id="curr_pres">{{ current_reading.pres }}</a><sup style="font-size: 20px;">hPa</sup></h3>
 
                   <p>Pressione</p>
                 </div>
@@ -362,8 +362,7 @@
   <!-- Custom JS -->
   <script>
     $(function () {
-      var trend;
-      trend = {{ current_reading.trend }};
+      var trend = '{{ current_reading.trend }}';
       switch (trend){
         case '>':
          document.getElementById("trend").classList.add('fa-caret-up');

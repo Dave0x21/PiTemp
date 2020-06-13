@@ -362,7 +362,8 @@
   <!-- Custom JS -->
   <script>
     $(function () {
-      var trend = {{ current_reading.trend }};
+      var trend;
+      trend = {{ current_reading.trend }};
       switch (trend){
         case '>':
          document.getElementById("trend").classList.add('fa-caret-up');

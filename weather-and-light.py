@@ -44,7 +44,7 @@ def db_write():
             humidity	INTEGER,
             light	INTEGER,
             pressure	INTEGER,
-            change TEXT
+            trend TEXT
         )""")
         conn.commit()
         conn.close()
@@ -60,7 +60,7 @@ def db_write():
 
         conn = sqlite3.connect(DB)
         c = conn.cursor()
-        c.execute("INSERT INTO pitemp (time, temp, humidity, light, pressure, change) \
+        c.execute("INSERT INTO pitemp (time, temp, humidity, light, pressure, trend) \
                       VALUES (?, ?, ?, ?, ?, ?)", measurement)
         conn.commit()
         conn.close()

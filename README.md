@@ -21,6 +21,8 @@ This project is born as gift for my father's birthday, I'll continue to contribu
   cd PiTemp
   bash install.sh
   ```
+#### How to access the dashboard
+You can access the web dashboard from your browser with the **ip address** of the raspberry pi
 
 ## Credits
 * **pitemp** file, wich make the measurements and dysplay them on onboard screen, is a modified version of [weather-and-light.py](https://github.com/pimoroni/enviroplus-python/blob/master/examples/weather-and-light.py) from [Enviro+ GitHub](https://github.com/pimoroni/enviroplus-python)

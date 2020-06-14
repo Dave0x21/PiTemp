@@ -1,0 +1,8 @@
+-- pip --
+
+enviroplus
+flask
+numpy
+smbus
+pillow
+setuptools

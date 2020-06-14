@@ -143,11 +143,11 @@ def custom_view():
         days[0] = datetime.datetime.strptime(days[0], '%b %d %Y')
         days[1] = datetime.datetime.strptime(days[1], '%b %d %Y')
         
-        query = "SELECT * from pitemp WHERE time BETWEEN '{}' AND '{}'".format(datetime.datetime.strftime(days[0], "%Y-%m-%d"), datetime.datetime.strftime(days[1], "%Y-%m-%d"))
+        query = "SELECT * from pitemp WHERE time BETWEEN date('{}') AND date('{}')".format(datetime.datetime.strftime(days[0], "%Y-%m-%d"), datetime.datetime.strftime(days[1], "%Y-%m-%d"))
 
         get_data(query)
 
-        return jsonify({"day": day, "media": MEDIA, "chart": GRAPH_VALUES, "min_max": MIN_MAX}), 200
+        return jsonify({"days": days, "media": MEDIA, "chart": GRAPH_VALUES, "min_max": MIN_MAX}), 200
     else:
         end = datetime.datetime.now()
         start = end - datetime.timedelta(days=6)

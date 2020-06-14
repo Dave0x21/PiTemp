@@ -13,7 +13,14 @@ This project is born as gift for my father's birthday, I'll continue to contribu
 ![CustomView](https://raw.githubusercontent.com/Dave0x21/PiTemp/master/screenshot/screenshot4.png)
 
 ## Install
-* install dependecies listed in **dependecies.txt**
+* Install dependecies listed in **dependecies.txt**
+* Configure your raspberry
+
+  ```
+  raspi-config nonint do_i2c 0
+  raspi-config nonint do_spi 0
+  ```
+  
 * Clone this repo and launch install.sh
 
   ```

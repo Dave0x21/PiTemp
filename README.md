@@ -13,6 +13,7 @@ This project is born as gift for my father's birthday, I'll continue to contribu
 ![CustomView](https://raw.githubusercontent.com/Dave0x21/PiTemp/master/screenshot/screenshot4.png)
 
 ## Install
+* install dependecies listed in **dependecies.txt**
 * Clone this repo and launch install.sh
 
   ```

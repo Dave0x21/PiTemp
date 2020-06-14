@@ -342,6 +342,10 @@
     <!-- Custom JS -->
     <script>
         $(function () {
+            var tempChart;
+            var humChart;
+            var luxChart;
+
             $('.daterange').daterangepicker({
                 ranges: {
                     'Ultimi 7 Giorni': [moment().subtract(6, 'days'), moment()],
@@ -377,10 +381,12 @@
                     for (var i = 0; i < response.chart.time.length; i++) {
                         response.chart.time[i] = moment(response.chart.time[i], "YYYY-MM-DD HH:mm");
                     }
-
-                    temp_chart(response.chart.time, response.chart.temp, ChartOptions);
-                    hum_chart(response.chart.time, response.chart.hum, ChartOptions);
-                    lux_chart(response.chart.time, response.chart.lux, ChartOptions);
+                    tempChart.destroy()
+                    tempChart = temp_chart(response.chart.time, response.chart.temp, ChartOptions);
+                    humChart.destroy();
+                    humChart = hum_chart(response.chart.time, response.chart.hum, ChartOptions);
+                    luxChart.destroy();
+                    luxChart = lux_chart(response.chart.time, response.chart.lux, ChartOptions);
                 })
             });
 
@@ -412,6 +418,7 @@
                     data: tempChartData,
                     options: ChartOptions,
                 });
+                return tempChart;
             };
 
             function hum_chart(label, data, ChartOptions) {
@@ -439,6 +446,7 @@
                     data: umidChartData,
                     options: ChartOptions,
                 });
+                return umidChart;
             };
 
             function lux_chart(label, data, ChartOptions) {
@@ -466,6 +474,7 @@
                     data: luxChartData,
                     options: ChartOptions,
                 });
+                return luxChart;
             };
 
 
@@ -507,9 +516,9 @@
                 },
             };
 
-            temp_chart(graph_values.time, graph_values.temp, ChartOptions);
-            hum_chart(graph_values.time, graph_values.hum, ChartOptions);
-            lux_chart(graph_values.time, graph_values.lux, ChartOptions);
+            tempChart = temp_chart(graph_values.time, graph_values.temp, ChartOptions);
+            humChart = hum_chart(graph_values.time, graph_values.hum, ChartOptions);
+            luxChart = lux_chart(graph_values.time, graph_values.lux, ChartOptions);
         });
     </script>
 </body>

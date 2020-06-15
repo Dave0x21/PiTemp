@@ -160,4 +160,16 @@ function parse_time(time) {
         time[i] = moment(time[i], "YYYY-MM-DD HH:mm");
     }
     return time;
-}
+};
+
+function update_chart(charts, data, chartOptions, destroy=false) {
+    if (destroy){
+        charts.temp.destroy();
+        charts.hum.destroy();
+        charts.lux.destroy();
+    }
+    data.time = parse_time(data.time);
+    charts.temp = temp_chart(data.time, data.temp, chartOptions);
+    charts.hum = hum_chart(data.time, data.hum, chartOptions);
+    charts.lux = lux_chart(data.time, data.lux, chartOptions);
+};

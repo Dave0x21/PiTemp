@@ -387,13 +387,9 @@
             var graph_values = '{{ graph_values|tojson }}';
             graph_values = JSON.parse(graph_values);
 
-            // Parse time value
-            graph_values.time = parse_time(graph_values.time);
-
             // Create Chart
-            tempChart = temp_chart(graph_values.time, graph_values.temp, ChartOptions);
-            humChart = hum_chart(graph_values.time, graph_values.hum, ChartOptions);
-            luxChart = lux_chart(graph_values.time, graph_values.lux, ChartOptions);
+            var charts = {"temp": "", "hum": "", "lux": ""};
+            update_chart(charts, graph_values, ChartOptions);
         });
     </script>
 </body>

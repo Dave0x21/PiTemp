@@ -337,8 +337,6 @@
     <!-- Custom JS -->
     <script>
         $(function () {
-            var tempChart, humChart, luxChart;
-
             // Create Calendar
             $('#calendar').datetimepicker({
                 date: moment('{{ day }}', "MMM DD YYYY"),
@@ -357,32 +355,16 @@
                 }).then(function (response) {
                     $('#day_title').html(response.day);
                     set_table(response);
-
-                    response.chart.time = parse_time(response.chart.time);
-
-                    tempChart.destroy();
-                    tempChart = temp_chart(response.chart.time, response.chart.temp, ChartOptions);
-
-                    humChart.destroy();
-                    humChart = hum_chart(response.chart.time, response.chart.hum, ChartOptions);
-
-                    luxChart.destroy();
-                    luxChart = lux_chart(response.chart.time, response.chart.lux, ChartOptions);
+                    update_chart(charts, response.chart, ChartOptions, true);
                 });
             });
 
             // Chart
             var graph_values = JSON.parse('{{ graph_values|tojson }}');
 
-            // Parse time value
-            for (var i = 0; i < graph_values.time.length; i++) {
-                graph_values.time[i] = moment(graph_values.time[i], "YYYY-MM-DD HH:mm");
-            }
-
             // Create Chart
-            tempChart = temp_chart(graph_values.time, graph_values.temp, ChartOptions);
-            humChart = hum_chart(graph_values.time, graph_values.hum, ChartOptions);
-            luxChart = lux_chart(graph_values.time, graph_values.lux, ChartOptions);
+            var charts = { "temp": "", "hum": "", "lux": "" };
+            update_chart(charts, graph_values, ChartOptions);
         });
     </script>
 </body>

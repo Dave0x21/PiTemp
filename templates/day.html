@@ -348,20 +348,20 @@
         }).then(function (response) {
           return response.json();
         }).then(function (response) {
-          document.getElementById('day_title').innerHTML = response.day;
-          document.getElementById('media_temp').innerHTML = response.media.temp;
-          document.getElementById('media_hum').innerHTML = response.media.hum;
-          document.getElementById('media_lux').innerHTML = response.media.lux;
-          document.getElementById('media_pres').innerHTML = response.media.pres;
+          $('#day_title').html(response.day);
+          $('#media_temp').html(response.media.temp);
+          $('#media_hum').html(response.media.hum);
+          $('#media_lux').html(response.media.lux);
+          $('#media_pres').html(response.media.pres);
 
-          document.getElementById('min_temp').innerHTML = response.min_max.temp[0];
-          document.getElementById('max_temp').innerHTML = response.min_max.temp[1];
-          document.getElementById('min_hum').innerHTML = response.min_max.hum[0];
-          document.getElementById('max_hum').innerHTML = response.min_max.hum[1];
-          document.getElementById('min_lux').innerHTML = response.min_max.lux[0];
-          document.getElementById('max_lux').innerHTML = response.min_max.lux[1];
-          document.getElementById('min_pres').innerHTML = response.min_max.pres[0];
-          document.getElementById('max_pres').innerHTML = response.min_max.pres[1];
+          $('#min_temp').html(esponse.min_max.temp[0]);
+          $('#max_temp').html(response.min_max.temp[1]);
+          $('#min_hum').html(response.min_max.hum[0]);
+          $('#max_hum').html(response.min_max.hum[1]);
+          $('#min_lux').html(response.min_max.lux[0]);
+          $('#max_lux').html(response.min_max.lux[1]);
+          $('#min_pres').html(response.min_max.pres[0]);
+          $('#max_pres').html(response.min_max.pres[1]);
 
           for (var i = 0; i < response.chart.time.length; i++) {
             response.chart.time[i] = moment(response.chart.time[i], "YYYY-MM-DD HH:mm");
@@ -369,8 +369,10 @@
 
           tempChart.destroy();
           tempChart = temp_chart(response.chart.time, response.chart.temp, ChartOptions);
+
           humChart.destroy();
           humChart = hum_chart(response.chart.time, response.chart.hum, ChartOptions);
+          
           luxChart.destroy();
           luxChart = lux_chart(response.chart.time, response.chart.lux, ChartOptions);
         });

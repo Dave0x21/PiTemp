@@ -153,7 +153,7 @@
                   <p>Pressione</p>
                 </div>
                 <div class="icon">
-                  <i class="fas fa-tachometer-alt"></i>
+                  <i id="pressure_icon" class="fas"></i>
                 </div>
               </div>
             </div>
@@ -363,17 +363,35 @@
   <script>
     $(function () {
       var trend = '{{ current_reading.trend|tojson }}';
+
       switch (JSON.parse(trend)){
         case '>':
-         document.getElementById("trend").classList.add('fa-caret-up');
+         $("#trend").addClass('fa-caret-up');
          break;
         case '=':
-          document.getElementById("trend").classList.add('fa-caret-right');
+          $("#trend").addClass('fa-caret-right');
           break;
         case '<':
-          document.getElementById("trend").classList.add('fa-caret-down');
+          $("#trend").addClass('fa-caret-down');
           break;
       }
+
+      var pressure = '{{ current_reading.pres|tojson }}';
+      pressure = JSON.parse(pressure);
+
+      if (pressure < 970){
+        $("#pressure_icon").addClass('fa-bolt');
+      }
+      else if (pressure < 990){
+        $("#pressure_icon").addClass('fa-cloud-rain');
+      }
+      else if (pressure < 1010){
+        $("#pressure_icon").addClass('fa-cloud');
+      }
+      else {
+        $("#pressure_icon").addClass('fa-sun');
+      }
+
       //--------------
       //- AREA CHART -
       //--------------
@@ -505,6 +523,7 @@
       tempChart = temp_chart(graph_values.time, graph_values.temp, ChartOptions);
       humChart = hum_chart(graph_values.time, graph_values.hum, ChartOptions);
       luxChart = lux_chart(graph_values.time, graph_values.lux, ChartOptions);
+      
       setInterval(function () {
         fetch('/update', {
           method: 'POST',

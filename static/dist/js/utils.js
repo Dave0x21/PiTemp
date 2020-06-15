@@ -145,7 +145,7 @@ function set_table(response) {
     $('#media_lux').html(response.media.lux);
     $('#media_pres').html(response.media.pres);
 
-    $('#min_temp').html(esponse.min_max.temp[0]);
+    $('#min_temp').html(response.min_max.temp[0]);
     $('#max_temp').html(response.min_max.temp[1]);
     $('#min_hum').html(response.min_max.hum[0]);
     $('#max_hum').html(response.min_max.hum[1]);
@@ -154,3 +154,10 @@ function set_table(response) {
     $('#min_pres').html(response.min_max.pres[0]);
     $('#max_pres').html(response.min_max.pres[1]);
 };
+
+function parse_time(time) {
+    for (var i = 0; i < time.length; i++) {
+        time[i] = moment(time[i], "YYYY-MM-DD HH:mm");
+    }
+    return time;
+}

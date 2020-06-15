@@ -367,10 +367,8 @@
                 }).then(function (response) {
                     set_table(response);
 
-                    for (var i = 0; i < response.chart.time.length; i++) {
-                        response.chart.time[i] = moment(response.chart.time[i], "YYYY-MM-DD HH:mm");
-                    }
-                    
+                    response.chart.time = parse_time(response.chart.time);
+
                     tempChart.destroy()
                     tempChart = temp_chart(response.chart.time, response.chart.temp, ChartOptions);
 
@@ -382,8 +380,7 @@
                 })
             });
 
-            var graph_values = '{{ graph_values|tojson }}';
-            graph_values = JSON.parse(graph_values);
+            var graph_values = JSON.parse('{{ graph_values|tojson }}');
 
             for (var i = 0; i < graph_values.time.length; i++) {
                 graph_values.time[i] = moment(graph_values.time[i], "YYYY-MM-DD HH:mm");

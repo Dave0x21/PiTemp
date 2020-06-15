@@ -365,13 +365,11 @@
   <script>
     $(function () {
       // Set Trend icon
-      var trend = '{{ current_reading.trend|tojson }}';
-      trend = JSON.parse(trend);
+      var trend = JSON.parse('{{ current_reading.trend|tojson }}');
       $('#trend').addClass(trend_icon(trend));
 
       // Set Pressure Icon
-      var pressure = '{{ current_reading.pres|tojson }}';
-      pressure = JSON.parse(pressure);
+      var pressure = JSON.parse('{{ current_reading.pres|tojson }}');
       $("#pressure_icon").addClass(pressure_icon(pressure));
 
       // Chart
@@ -380,9 +378,7 @@
       graph_values = JSON.parse(graph_values);
 
       // Parse time value
-      for (var i = 0; i < graph_values.time.length; i++) {
-        graph_values.time[i] = moment(graph_values.time[i], "YYYY-MM-DD HH:mm");
-      }
+      graph_values.time = parse_time(graph_values.time);
 
       // Create Chart
       tempChart = temp_chart(graph_values.time, graph_values.temp, ChartOptions);

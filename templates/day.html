@@ -332,9 +332,7 @@
   <!-- Custom JS -->
   <script>
     $(function () {
-      var tempChart;
-      var humChart;
-      var luxChart;
+      var tempChart, humChart, luxChart;
 
       // Create Calendar
       $('#calendar').datetimepicker({
@@ -355,9 +353,7 @@
           $('#day_title').html(response.day);
           set_table(response);
 
-          for (var i = 0; i < response.chart.time.length; i++) {
-            response.chart.time[i] = moment(response.chart.time[i], "YYYY-MM-DD HH:mm");
-          }
+          response.chart.time = parse_time(response.chart.time);
 
           tempChart.destroy();
           tempChart = temp_chart(response.chart.time, response.chart.temp, ChartOptions);
@@ -371,8 +367,7 @@
       });
 
       // Chart
-      var graph_values = '{{ graph_values|tojson }}';
-      graph_values = JSON.parse(graph_values);
+      var graph_values = JSON.parse('{{ graph_values|tojson }}');
 
       // Parse time value
       for (var i = 0; i < graph_values.time.length; i++) {

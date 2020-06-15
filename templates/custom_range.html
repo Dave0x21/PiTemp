@@ -362,14 +362,14 @@
                     return response.json();
                 }).then(function (response) {
                     set_table(response);
-                    update_chart(charts, response.chart, ChartOptions, true);
+                    update_chart(charts, response.chart, ChartOptions('day'), true);
                 })
             });
 
             var graph_values = JSON.parse('{{ graph_values|tojson }}');
 
             var charts = { "temp": "", "hum": "", "lux": "" };
-            update_chart(charts, graph_values, ChartOptions);
+            update_chart(charts, graph_values, ChartOptions('day'));
         });
     </script>
 </body>

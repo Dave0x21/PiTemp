@@ -26,35 +26,38 @@ function create_chart(id, label, data, ChartOptions, name, backColor, lineColor)
     return myChart;
 };
 
-var ChartOptions = {
-    maintainAspectRatio: false,
-    responsive: true,
-    legend: {
-        display: false,
-    },
-    scales: {
-        xAxes: [{
-            type: 'time',
-            time: {
-                unit: 'hour',
-                stepSize: 1,
-                displayFormats: {
-                    hour: "HH:mm"
-                },
-                tooltipFormat: "D MMM HH:mm",
-            }
-        }],
-        yAxes: [
-            {
-                gridLines: {
-                    display: true,
-                },
-                ticks: {
-                    beginAtZero: false,
+function ChartOptions(unit){
+    var chartOptions = {
+        maintainAspectRatio: false,
+        responsive: true,
+        legend: {
+            display: false,
+        },
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    unit: unit,
+                    stepSize: 1,
+                    displayFormats: {
+                        hour: "HH:mm"
+                    },
+                    tooltipFormat: "D MMM HH:mm",
                 }
-            },
-        ],
-    },
+            }],
+            yAxes: [
+                {
+                    gridLines: {
+                        display: true,
+                    },
+                    ticks: {
+                        beginAtZero: false,
+                    }
+                },
+            ],
+        },
+    };
+    return chartOptions;
 };
 
 function trend_icon(trend) {

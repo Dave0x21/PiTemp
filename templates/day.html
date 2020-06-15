@@ -355,7 +355,7 @@
                 }).then(function (response) {
                     $('#day_title').html(response.day);
                     set_table(response);
-                    update_chart(charts, response.chart, ChartOptions, true);
+                    update_chart(charts, response.chart, ChartOptions('hour'), true);
                 });
             });
 
@@ -364,7 +364,7 @@
 
             // Create Chart
             var charts = { "temp": "", "hum": "", "lux": "" };
-            update_chart(charts, graph_values, ChartOptions);
+            update_chart(charts, graph_values, ChartOptions('hour'));
         });
     </script>
 </body>

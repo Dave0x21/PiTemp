@@ -359,203 +359,35 @@
   <script src="plugins/moment/moment.min.js"></script>
   <script src="plugins/chart.js/Chart.min.js"></script>
 
+  <script src="dist/js/utils.js"></script>
+
   <!-- Custom JS -->
   <script>
     $(function () {
+      // Set Trend icon
       var trend = '{{ current_reading.trend|tojson }}';
+      trend = JSON.parse(trend);
+      $('#trend').addClass(trend_icon(trend));
 
-      switch (JSON.parse(trend)){
-        case '>':
-         $("#trend").addClass('fa-caret-up');
-         break;
-        case '=':
-          $("#trend").addClass('fa-caret-right');
-          break;
-        case '<':
-          $("#trend").addClass('fa-caret-down');
-          break;
-      }
-
+      // Set Pressure Icon
       var pressure = '{{ current_reading.pres|tojson }}';
       pressure = JSON.parse(pressure);
+      $("#pressure_icon").addClass(pressure_icon(pressure));
 
-      if (pressure < 970){
-        $("#pressure_icon").addClass('fa-bolt');
-      }
-      else if (pressure < 990){
-        $("#pressure_icon").addClass('fa-cloud-rain');
-      }
-      else if (pressure < 1010){
-        $("#pressure_icon").addClass('fa-cloud');
-      }
-      else {
-        $("#pressure_icon").addClass('fa-sun');
-      }
-
-      //--------------
-      //- AREA CHART -
-      //--------------
+      // Chart
       var tempChart, humChart, luxChart;
-
-      function temp_chart(label, data, ChartOptions) {
-        var tempChartCanvas = $("#tempChart").get(0).getContext("2d");
-
-        var tempChartData = {
-          labels: label,
-          datasets: [
-            {
-              label: "Temperatura",
-              backgroundColor: "rgba(23,162,184,0.5)",
-              borderColor: "rgba(23,162,184,1)",
-              pointRadius: false,
-              pointColor: "#3b8bba",
-              pointStrokeColor: "rgba(23,162,184,1)",
-              pointHighlightFill: "#fff",
-              pointHighlightStroke: "rgba(23,162,184,1)",
-              data: data,
-            },
-          ],
-        };
-
-        var tempChart = new Chart(tempChartCanvas, {
-          type: "line",
-          data: tempChartData,
-          options: ChartOptions,
-        });
-        return tempChart;
-      };
-
-      function hum_chart(label, data, ChartOptions) {
-        var umidChartCanvas = $("#umidChart").get(0).getContext("2d");
-
-        var umidChartData = {
-          labels: label,
-          datasets: [
-            {
-              label: "Umidità",
-              backgroundColor: "rgba(40,167,69,0.5)",
-              borderColor: "rgba(40,167,69,1)",
-              pointRadius: false,
-              pointColor: "rgba(40,167,69,1)",
-              pointStrokeColor: "#c1c7d1",
-              pointHighlightFill: "#fff",
-              pointHighlightStroke: "rgba(40,167,69,1)",
-              data: data,
-            },
-          ],
-        };
-
-        var umidChart = new Chart(umidChartCanvas, {
-          type: "line",
-          data: umidChartData,
-          options: ChartOptions,
-        });
-        return umidChart;
-      };
-
-      function lux_chart(label, data, ChartOptions) {
-        var luxChartCanvas = $("#luxChart").get(0).getContext("2d");
-
-        var luxChartData = {
-          labels: label,
-          datasets: [
-            {
-              label: "Luce",
-              backgroundColor: "rgba(255,193,7,0.5)",
-              borderColor: "rgba(255,193,7,1)",
-              pointRadius: false,
-              pointColor: "#3b8bba",
-              pointStrokeColor: "rgba(255,193,7,1)",
-              pointHighlightFill: "#fff",
-              pointHighlightStroke: "rgba(255,193,7,1)",
-              data: data,
-            },
-          ],
-        };
-
-        var luxChart = new Chart(luxChartCanvas, {
-          type: "line",
-          data: luxChartData,
-          options: ChartOptions,
-        });
-        return luxChart
-      };
-
-
       var graph_values = '{{ graph_values|tojson }}';
       graph_values = JSON.parse(graph_values);
 
+      // Parse time value
       for (var i = 0; i < graph_values.time.length; i++) {
         graph_values.time[i] = moment(graph_values.time[i], "YYYY-MM-DD HH:mm");
       }
 
-      var ChartOptions = {
-        maintainAspectRatio: false,
-        responsive: true,
-        legend: {
-          display: false,
-        },
-        scales: {
-          xAxes: [{
-            type: 'time',
-            time: {
-              unit: 'hour',
-              stepSize: 1,
-              displayFormats: {
-                hour: "HH:mm"
-              },
-              tooltipFormat: "D MMM HH:mm",
-            }
-          }],
-          yAxes: [
-            {
-              gridLines: {
-                display: true,
-              },
-              ticks: {
-                beginAtZero: false,
-              }
-            },
-          ],
-        },
-      };
-
+      // Create Chart
       tempChart = temp_chart(graph_values.time, graph_values.temp, ChartOptions);
       humChart = hum_chart(graph_values.time, graph_values.hum, ChartOptions);
       luxChart = lux_chart(graph_values.time, graph_values.lux, ChartOptions);
-      
-      setInterval(function () {
-        fetch('/update', {
-          method: 'POST',
-          body: ''
-        }).then(function (response) {
-          return response.json();
-        }).then(function (response) {
-          var now;
-          document.getElementById('curr_temp').innerHTML = response.temp;
-          document.getElementById('curr_hum').innerHTML = response.hum;
-          document.getElementById('curr_lux').innerHTML = response.lux;
-          document.getElementById('curr_pres').innerHTML = response.pres;
-          now = moment(response.time, "YYYY-MM-DD HH:mm");
-          tempChart.data.labels.push(now);
-          tempChart.data.datasets.forEach((dataset) => {
-            dataset.data.push(response.temp);
-          });
-          tempChart.update();
-
-          humChart.data.labels.push(now);
-          humChart.data.datasets.forEach((dataset) => {
-            dataset.data.push(response.hum);
-          });
-          humChart.update();
-
-          luxChart.data.labels.push(now);
-          luxChart.data.datasets.forEach((dataset) => {
-            dataset.data.push(response.lux);
-          });
-          luxChart.update();
-        });
-      }, 60000);
     });
   </script>
 </body>

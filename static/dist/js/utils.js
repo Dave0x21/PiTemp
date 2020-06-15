@@ -1,85 +1,29 @@
-function temp_chart(label, data, ChartOptions) {
-    var tempChartCanvas = $("#tempChart").get(0).getContext("2d");
+function create_chart(id, label, data, ChartOptions, name, backColor, lineColor) {
+    var ChartCanvas = $(id).get(0).getContext("2d");
 
-    var tempChartData = {
+    var ChartData = {
         labels: label,
         datasets: [
             {
-                label: "Temperatura",
-                backgroundColor: "rgba(23,162,184,0.5)",
-                borderColor: "rgba(23,162,184,1)",
+                label: name,
+                backgroundColor: backColor,
+                borderColor: lineColor,
                 pointRadius: false,
-                pointColor: "#3b8bba",
-                pointStrokeColor: "rgba(23,162,184,1)",
+                pointColor: lineColor,
+                pointStrokeColor: lineColor,
                 pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(23,162,184,1)",
+                pointHighlightStroke: lineColor,
                 data: data,
             },
         ],
     };
 
-    var tempChart = new Chart(tempChartCanvas, {
+    var myChart = new Chart(ChartCanvas, {
         type: "line",
-        data: tempChartData,
+        data: ChartData,
         options: ChartOptions,
     });
-    return tempChart;
-};
-
-function hum_chart(label, data, ChartOptions) {
-    var umidChartCanvas = $("#umidChart").get(0).getContext("2d");
-
-    var umidChartData = {
-        labels: label,
-        datasets: [
-            {
-                label: "Umidità",
-                backgroundColor: "rgba(40,167,69,0.5)",
-                borderColor: "rgba(40,167,69,1)",
-                pointRadius: false,
-                pointColor: "rgba(40,167,69,1)",
-                pointStrokeColor: "#c1c7d1",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(40,167,69,1)",
-                data: data,
-            },
-        ],
-    };
-
-    var umidChart = new Chart(umidChartCanvas, {
-        type: "line",
-        data: umidChartData,
-        options: ChartOptions,
-    });
-    return umidChart;
-};
-
-function lux_chart(label, data, ChartOptions) {
-    var luxChartCanvas = $("#luxChart").get(0).getContext("2d");
-
-    var luxChartData = {
-        labels: label,
-        datasets: [
-            {
-                label: "Luce",
-                backgroundColor: "rgba(255,193,7,0.5)",
-                borderColor: "rgba(255,193,7,1)",
-                pointRadius: false,
-                pointColor: "#3b8bba",
-                pointStrokeColor: "rgba(255,193,7,1)",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(255,193,7,1)",
-                data: data,
-            },
-        ],
-    };
-
-    var luxChart = new Chart(luxChartCanvas, {
-        type: "line",
-        data: luxChartData,
-        options: ChartOptions,
-    });
-    return luxChart
+    return myChart;
 };
 
 var ChartOptions = {
@@ -169,7 +113,7 @@ function update_chart(charts, data, chartOptions, destroy=false) {
         charts.lux.destroy();
     }
     data.time = parse_time(data.time);
-    charts.temp = temp_chart(data.time, data.temp, chartOptions);
-    charts.hum = hum_chart(data.time, data.hum, chartOptions);
-    charts.lux = lux_chart(data.time, data.lux, chartOptions);
+    charts.temp = create_chart('#tempChart', data.time, data.temp, chartOptions, "Temperatura", "rgba(23,162,184,0.5)", "rgba(23,162,184,1)");
+    charts.hum = create_chart('#umidChart', data.time, data.hum, chartOptions, "Umidità", "rgba(40,167,69,0.5)", "rgba(40,167,69,1)");
+    charts.lux = create_chart("#luxChart", data.time, data.lux, chartOptions, "Luce", "rgba(255,193,7,0.5)", "rgba(255,193,7,1)");
 };

@@ -13,11 +13,10 @@ from flask import (Flask, Response, jsonify, render_template, request,
                    send_from_directory, url_for)
 from werkzeug.serving import make_server
 
-RESPONSE         =  {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [], 
-                     'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}, 
-                     'media': {"temp": 0, "hum": 0, "lux": 0, "pres": 0}}
-CURRENT_READING  =  {"temp": 0, "hum": 0, "lux": 0, "pres": 0, "trend": ""}
-DB               =  "/etc/pitemp/pitemp.db"
+RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [], 
+            'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}, 
+            'media': {"temp": 0, "hum": 0, "lux": 0, "pres": 0}}
+DB = "/etc/pitemp/pitemp.db"
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -67,6 +66,10 @@ def dict_factory(cursor, row):
 
 def get_data(query):
     global RESPONSE
+
+    RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [], 
+                'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}, 
+                'media': {"temp": 0, "hum": 0, "lux": 0, "pres": 0}}
 
     conn = sqlite3.connect(DB)
     conn.row_factory = dict_factory
@@ -148,19 +151,6 @@ def custom_view():
         date = [datetime.datetime.strftime(start, "%b %d %Y"), datetime.datetime.strftime(end, "%b %d %Y")]
         return render_template("custom_range.html", data=dict(RESPONSE, **{'days': date}))
 
-@app.route("/update", methods=["POST"])
-def curr_update():
-    global CURRENT_READING
-    conn = sqlite3.connect(DB)
-    c = conn.cursor()
-    query = "SELECT * FROM pitemp ORDER BY ID DESC LIMIT 1"
-    for row in c.execute(query):
-        CURRENT_READING['time'] = row[1]
-        CURRENT_READING['temp'] = row[2]
-        CURRENT_READING['hum'] = row[3]
-        CURRENT_READING['lux'] = row[4]
-        CURRENT_READING['pres'] = row[5]
-    return jsonify(CURRENT_READING), 200
 
 
 @app.route("/static/<path:path>")

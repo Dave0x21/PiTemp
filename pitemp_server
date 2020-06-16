@@ -100,13 +100,13 @@ def day_view():
     global RESPONSE
 
     if request.method == 'POST':
-        date = request.get_json()
-        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE (time LIKE '{}%')".format(date['day'])
+        date = request.get_data().decode()
+        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE (time LIKE '{}%')".format(date)
         get_data(query)
 
         return jsonify(RESPONSE), 200
     else:
-        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE time = datetime('now', '-1 days', 'localtime')"
+        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE time BETWEEN date('now', '-1 days', 'localtime') AND date('now', 'localtime')"
         get_data(query)
 
         return render_template("day.html", response=RESPONSE)
@@ -117,7 +117,7 @@ def custom_view():
     global RESPONSE
 
     if request.method == 'POST':
-        date = request.get_json()
+        date = eval(request.get_data().decode())
 
         query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE time BETWEEN date('{}') AND date('{}')".format(date['start'], date['end'])
         get_data(query)

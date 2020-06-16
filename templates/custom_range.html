@@ -347,7 +347,7 @@
             var data = JSON.parse('{{ response|tojson }}');
             var charts = { "temp": "", "hum": "", "lux": "" };
 
-            $('#period_txt').html(moment().subtract(6, 'days').format('DD MMMM YYYY') + ' - ' + moment().format('DD MMMMM YYYY'))
+            $('#period_txt').html(moment().subtract(6, 'days').format('DD MMMM YYYY') + ' - ' + moment().format('DD MMMM YYYY'))
             update_chart(charts, data, ChartOptions('day'));
             set_table(data.media, data.min_max);
 
@@ -362,10 +362,10 @@
                 endDate: moment()
             }, 
             function (start, end) {
-                $('#period_txt').html(start.format('MMM DD YYYY') + ' - ' + end.format('MMM DD YYYY'));
+                $('#period_txt').html(start.format('DD MMMM YYYY') + ' - ' + end.format('DD MMMM YYYY'));
 
                 date = {'start': start.format('YYYY-MM-DD'), 'end': end.format('YYYY-MM-DD')};
-                $.post('/custom_view', date, function (response){
+                $.post('/custom_view', JSON.stringify(date), function (response){
                     set_table(response.media, response.min_max);
                     update_chart(charts, response, ChartOptions('day'), true);
                 });

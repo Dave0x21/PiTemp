@@ -356,10 +356,9 @@
 
             // On Change Date Event
             $('#calendar').on("change.datetimepicker", function (e) {
-                var date = {'day': $('#calendar').datetimepicker('date').format('YYYY-MM-DD')};
-
-                $.post('/day_view', date, function (response){
-                    $('#day_title').html(date.day);
+		var date = $('#calendar').datetimepicker('date').format('YYYY-MM-DD');
+                $('#day_title').html($('#calendar').datetimepicker('date').format('DD MMMM YYYY'));
+                $.post('/day_view', date, function (response){ $('#day_title').html(date.day);
                     set_table(response.media, response.min_max);
                     update_chart(charts, response, ChartOptions('hour'), true);
                 });

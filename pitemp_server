@@ -97,7 +97,7 @@ def get_data(query):
 def index():
     global RESPONSE
 
-    get_data("SELECT * FROM pitemp WHERE time >= datetime('now', '-24 hours', 'localtime')")
+    get_data("SELECT time, temp, humidity, light, pressure, trend FROM pitemp WHERE time >= datetime('now', '-24 hours', 'localtime')")
     return render_template("index.html", response=RESPONSE)
 
 
@@ -111,16 +111,16 @@ def day_view():
         day = ' '.join(day)
 
         date = datetime.datetime.strptime(day, '%b %d %Y')
-        query = "SELECT * from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%Y-%m-%d"))
+        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%Y-%m-%d"))
         get_data(query)
 
         return jsonify(dict(RESPONSE, **{"day": day})), 200
     else:
         date = datetime.datetime.now() - datetime.timedelta(days=1)
-        query = "SELECT * from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%Y-%m-%d"))
+        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%Y-%m-%d"))
         date = datetime.datetime.strftime(date, "%b %d %Y")
         get_data(query)
-        return render_template("day.html", data=dict(RESPONSE, **{'day': date}))
+        return render_template("day.html", response=dict(RESPONSE, **{'day': date}))
 
 
 @app.route("/custom_view", methods=['GET', 'POST'])
@@ -134,7 +134,7 @@ def custom_view():
         days[0] = datetime.datetime.strptime(days[0], '%b %d %Y')
         days[1] = datetime.datetime.strptime(days[1], '%b %d %Y')
 
-        query = "SELECT * from pitemp WHERE time BETWEEN date('{}') AND date('{}')".format(
+        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE time BETWEEN date('{}') AND date('{}')".format(
             datetime.datetime.strftime(days[0], "%Y-%m-%d"), datetime.datetime.strftime(days[1], "%Y-%m-%d"))
 
         get_data(query)
@@ -143,12 +143,12 @@ def custom_view():
     else:
         end = datetime.datetime.now()
         start = end - datetime.timedelta(days=6)
-        query = "SELECT * FROM pitemp WHERE time >= datetime('now', '-6 days', 'localtime')"
+        query = "SELECT time, temp, humidity, light, pressure, trend FROM pitemp WHERE time >= datetime('now', '-6 days', 'localtime')"
 
         get_data(query)
 
         date = [datetime.datetime.strftime(start, "%b %d %Y"), datetime.datetime.strftime(end, "%b %d %Y")]
-        return render_template("custom_range.html", data=dict(RESPONSE, **{'days': date}))
+        return render_template("custom_range.html", response=dict(RESPONSE, **{'days': date}))
 
 
 @app.route("/static/<path:path>")

@@ -86,20 +86,20 @@ function pressure_icon(pressure) {
     }
 };
 
-function set_table(response) {
-    $('#media_temp').html(response.media.temp);
-    $('#media_hum').html(response.media.hum);
-    $('#media_lux').html(response.media.lux);
-    $('#media_pres').html(response.media.pres);
+function set_table(media, min_max) {
+    $('#media_temp').html(media.temp);
+    $('#media_hum').html(media.hum);
+    $('#media_lux').html(media.lux);
+    $('#media_pres').html(media.pres);
 
-    $('#min_temp').html(response.min_max.temp[0]);
-    $('#max_temp').html(response.min_max.temp[1]);
-    $('#min_hum').html(response.min_max.hum[0]);
-    $('#max_hum').html(response.min_max.hum[1]);
-    $('#min_lux').html(response.min_max.lux[0]);
-    $('#max_lux').html(response.min_max.lux[1]);
-    $('#min_pres').html(response.min_max.pres[0]);
-    $('#max_pres').html(response.min_max.pres[1]);
+    $('#min_temp').html(min_max.temp[0]);
+    $('#max_temp').html(min_max.temp[1]);
+    $('#min_hum').html(min_max.hum[0]);
+    $('#max_hum').html(min_max.hum[1]);
+    $('#min_lux').html(min_max.lux[0]);
+    $('#max_lux').html(min_max.lux[1]);
+    $('#min_pres').html(min_max.pres[0]);
+    $('#max_pres').html(min_max.pres[1]);
 };
 
 function parse_time(time) {
@@ -117,6 +117,17 @@ function update_chart(charts, data, chartOptions, destroy=false) {
     }
     data.time = parse_time(data.time);
     charts.temp = create_chart('#tempChart', data.time, data.temp, chartOptions, "Temperatura", "rgba(23,162,184,0.5)", "rgba(23,162,184,1)");
-    charts.hum = create_chart('#umidChart', data.time, data.hum, chartOptions, "Umidità", "rgba(40,167,69,0.5)", "rgba(40,167,69,1)");
-    charts.lux = create_chart("#luxChart", data.time, data.lux, chartOptions, "Luce", "rgba(255,193,7,0.5)", "rgba(255,193,7,1)");
+    charts.hum = create_chart('#umidChart', data.time, data.humidity, chartOptions, "Umidità", "rgba(40,167,69,0.5)", "rgba(40,167,69,1)");
+    charts.lux = create_chart("#luxChart", data.time, data.light, chartOptions, "Luce", "rgba(255,193,7,0.5)", "rgba(255,193,7,1)");
 };
+
+function set_currentValue(temp, hum, lux, pres) {
+    $('#curr_temp').html(temp);
+    $('#curr_hum').html(hum);
+    $('#curr_lux').html(lux);
+    $('#curr_pres').html(pres);
+};
+
+function last(array) {
+    return array[array.length - 1];
+}

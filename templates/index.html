@@ -107,7 +107,7 @@
                             <!-- small box -->
                             <div class="small-box bg-info">
                                 <div class="inner">
-                                    <h3><a id="curr_temp">{{ current_reading.temp }}</a><sup
+                                    <h3><a id="curr_temp"></a><sup
                                             style="font-size: 20px;">°C</sup></h3>
 
                                     <p>Temperatura</p>
@@ -122,7 +122,7 @@
                             <!-- small box -->
                             <div class="small-box bg-success">
                                 <div class="inner">
-                                    <h3><a id="curr_hum">{{ current_reading.hum }}</a><sup
+                                    <h3><a id="curr_hum"></a><sup
                                             style="font-size: 20px;">%</sup></h3>
 
                                     <p>Umidità</p>
@@ -137,7 +137,7 @@
                             <!-- small box -->
                             <div class="small-box bg-warning">
                                 <div class="inner">
-                                    <h3><a id="curr_lux">{{ current_reading.lux }}</a><sup
+                                    <h3><a id="curr_lux"></a><sup
                                             style="font-size: 20px;">lx</sup></h3>
 
                                     <p>Luce</p>
@@ -153,7 +153,7 @@
                             <div class="small-box bg-danger">
                                 <div class="inner">
                                     <h3><i id="trend" class="fas"></i> <a
-                                            id="curr_pres">{{ current_reading.pres }}</a><sup
+                                            id="curr_pres"></a><sup
                                             style="font-size: 20px;">hPa</sup></h3>
 
                                     <p>Pressione</p>
@@ -275,23 +275,23 @@
                                         <tbody>
                                             <tr>
                                                 <td>Temperatura</td>
-                                                <td>{{ min_max.temp[0] }}<sup>°C</sup></td>
-                                                <td>{{ min_max.temp[1] }}<sup>°C</sup></td>
+                                                <td><a id="min_temp"></a><sup>°C</sup></td>
+                                                <td><a id="max_temp"></a><sup>°C</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Umidità</td>
-                                                <td>{{ min_max.hum[0] }}<sup>%</sup></td>
-                                                <td>{{ min_max.hum[1] }}<sup>%</sup></td>
+                                                <td><a id="min_hum"></a><sup>%</sup></td>
+                                                <td><a id="max_hum"></a><sup>%</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Luce</td>
-                                                <td>{{ min_max.lux[0] }}<sup>lx</sup></td>
-                                                <td>{{ min_max.lux[1] }}<sup>lx</sup></td>
+                                                <td><a id="min_lux"></a><sup>lx</sup></td>
+                                                <td><a id="max_lux"></a><sup>lx</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Pressione</td>
-                                                <td>{{ min_max.pres[0] }}<sup>hPa</sup></td>
-                                                <td>{{ min_max.pres[1] }}<sup>hPa</sup></td>
+                                                <td><a id="min_pres">}</a><sup>hPa</sup></td>
+                                                <td><a id="max_pres"></a><sup>hPa</sup></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -316,19 +316,19 @@
                                         <tbody>
                                             <tr>
                                                 <td>Temperatura</td>
-                                                <td>{{ media.temp }}<sup>°C</sup></td>
+                                                <td><a id="media_temp"></a><sup>°C</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Umidità</td>
-                                                <td>{{ media.hum }}<sup>%</sup></td>
+                                                <td><a id="media_hum"></a><sup>%</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Luce</td>
-                                                <td>{{ media.lux }}<sup>lx</sup></td>
+                                                <td><a id="media_lux"></a><sup>lx</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Pressione</td>
-                                                <td>{{ media.pres }}<sup>hPa</sup></td>
+                                                <td><a id="media_pres"></a><sup>hPa</sup></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -374,22 +374,23 @@
     <!-- Custom JS -->
     <script>
         $(function () {
-            // Set Trend icon
-            var trend = JSON.parse('{{ current_reading.trend|tojson }}');
-            $('#trend').addClass(trend_icon(trend));
+            // Get values
+            var data = JSON.parse('{{ response|tojson }}');
+            var lastPressure = last(data.pressure);
 
-            // Set Pressure Icon
-            var pressure = JSON.parse('{{ current_reading.pres|tojson }}');
-            $("#pressure_icon").addClass(pressure_icon(pressure));
+            // Set current value
+            set_currentValue(last(data.temp), last(data.humidity), last(data.light), lastPressure);
 
             // Chart
-            var tempChart, humChart, luxChart;
-            var graph_values = '{{ graph_values|tojson }}';
-            graph_values = JSON.parse(graph_values);
-
-            // Create Chart
             var charts = {"temp": "", "hum": "", "lux": ""};
-            update_chart(charts, graph_values, ChartOptions('hour'));
+            update_chart(charts, data, ChartOptions('hour'));
+
+            // Set Trend icon
+            $('#trend').addClass(trend_icon(last(data.trend)));
+            // Set pressure icon
+            $("#pressure_icon").addClass(pressure_icon(lastPressure));
+
+            set_table(data.media, data.min_max);
         });
     </script>
 </body>

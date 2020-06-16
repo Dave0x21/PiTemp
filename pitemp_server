@@ -13,8 +13,8 @@ from flask import (Flask, jsonify, render_template,
 from werkzeug.serving import make_server
 
 RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [],
-            'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]},
-            'media': {"temp": 0, "hum": 0, "lux": 0, "pres": 0}}
+            'min_max': {"temp": [0, 0], "humidity": [0, 0], "light": [0, 0], "pressure": [0, 0]},
+            'media': {"temp": 0, "humidity": 0, "light": 0, "pressure": 0}}
 DB = "/etc/pitemp/pitemp.db"
 
 

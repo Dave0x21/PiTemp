@@ -13,10 +13,10 @@ from flask import (Flask, Response, jsonify, render_template, request,
                    send_from_directory, url_for)
 from werkzeug.serving import make_server
 
+RESPONSE         =  {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [], 
+                     'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}, 
+                     'media': {"temp": 0, "hum": 0, "lux": 0, "pres": 0}}
 CURRENT_READING  =  {"temp": 0, "hum": 0, "lux": 0, "pres": 0, "trend": ""}
-GRAPH_VALUES     =  {"temp": [], "hum": [], "lux": [], "pres": [], "time": []}
-MIN_MAX          =  {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}
-MEDIA            =  {"temp": 0, "hum": 0, "lux": 0, "pres": 0}
 DB               =  "/etc/pitemp/pitemp.db"
 
 
@@ -58,55 +58,52 @@ class WebServerThread(Thread):
         self.srv.shutdown()
 
 
+def dict_factory(cursor, row):
+    global RESPONSE
+    for idx, col in enumerate(cursor.description):
+        RESPONSE[col[0]].append(row[idx])
+    return RESPONSE
+
+
 def get_data(query):
-    global GRAPH_VALUES, MIN_MAX, MEDIA, CURRENT_READING
-    GRAPH_VALUES = {"temp": [], "hum": [], "lux": [], "pres": [], "time": []}
+    global RESPONSE
+
     conn = sqlite3.connect(DB)
+    conn.row_factory = dict_factory
     c = conn.cursor()
-    for row in c.execute(query):
-        GRAPH_VALUES['time'].append(row[1])
-        GRAPH_VALUES['temp'].append(row[2])
-        GRAPH_VALUES['hum'].append(row[3])
-        GRAPH_VALUES['lux'].append(row[4])
-        GRAPH_VALUES['pres'].append(row[5])
-        CURRENT_READING['trend'] = row[6]
+    c.execute(query)
+    c.fetchall()
     
     try:
-        MEDIA['temp'] = "{:.1f}".format(sum(GRAPH_VALUES['temp']) / float(len(GRAPH_VALUES['temp'])))
-        MEDIA['hum'] = "{:.1f}".format(sum(GRAPH_VALUES['hum']) / float(len(GRAPH_VALUES['hum'])))
-        MEDIA['lux'] = "{:.1f}".format(sum(GRAPH_VALUES['lux']) / float(len(GRAPH_VALUES['lux'])))
-        MEDIA['pres'] = "{:.1f}".format(sum(GRAPH_VALUES['pres']) / float(len(GRAPH_VALUES['pres'])))
+        tot = float(len(RESPONSE['temp']))
 
-        CURRENT_READING['temp'] = GRAPH_VALUES['temp'][-1]
-        CURRENT_READING['hum'] = GRAPH_VALUES['hum'][-1]
-        CURRENT_READING['lux'] = GRAPH_VALUES['lux'][-1]
-        CURRENT_READING['pres'] = GRAPH_VALUES['pres'][-1]
+        RESPONSE['media']['temp'] = "{:.1f}".format(sum(RESPONSE['temp']) / tot)
+        RESPONSE['media']['hum'] = "{:.1f}".format(sum(RESPONSE['humidity']) / tot)
+        RESPONSE['media']['lux'] = "{:.1f}".format(sum(RESPONSE['light']) / tot)
+        RESPONSE['media']['pres'] = "{:.1f}".format(sum(RESPONSE['pressure']) / tot)
 
-        MIN_MAX['temp'] = [min(GRAPH_VALUES['temp']),
-                           max(GRAPH_VALUES['temp'])]
-        MIN_MAX['hum'] = [min(GRAPH_VALUES['hum']),
-                          max(GRAPH_VALUES['hum'])]
-        MIN_MAX['lux'] = [min(GRAPH_VALUES['lux']),
-                          max(GRAPH_VALUES['lux'])]
-        MIN_MAX['pres'] = [min(GRAPH_VALUES['pres']),
-                           max(GRAPH_VALUES['pres'])]
+        RESPONSE['min_max']['temp'] = [min(RESPONSE['temp']), max(RESPONSE['temp'])]
+        RESPONSE['min_max']['hum'] = [min(RESPONSE['humidity']), max(RESPONSE['humidity'])]
+        RESPONSE['min_max']['lux'] = [min(RESPONSE['light']), max(RESPONSE['light'])]
+        RESPONSE['min_max']['pres'] = [min(RESPONSE['pressure']), max(RESPONSE['pressure'])]
     except ZeroDivisionError:
-        MEDIA = {"temp": 0, "hum": 0, "lux": 0, "pres": 0}
-        MIN_MAX = {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}
+        RESPONSE['media'] = {"temp": 0, "hum": 0, "lux": 0, "pres": 0}
+        RESPONSE['min_max'] = {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}
 
 
 
 @app.route("/")
 def index():
-    end = datetime.datetime.now()
-    start = end - datetime.timedelta(hours=24)
+    global RESPONSE
 
     get_data("SELECT * FROM pitemp WHERE time >= datetime('now', '-24 hours', 'localtime')")
-    return render_template("index.html", current_reading=CURRENT_READING, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
+    return render_template("index.html", response = RESPONSE)
 
 
 @app.route("/day_view", methods=['GET', 'POST'])
 def day_view():
+    global RESPONSE
+
     if request.method == 'POST':
         day = request.get_data()
         day = [x.decode() for x in day.split()[1:4]]
@@ -116,17 +113,19 @@ def day_view():
         query = "SELECT * from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%Y-%m-%d"))
         get_data(query)
 
-        return jsonify({"day": day, "media": MEDIA, "chart": GRAPH_VALUES, "min_max": MIN_MAX}), 200
+        return jsonify(dict(RESPONSE, **{"day": day})), 200
     else:
         date = datetime.datetime.now() - datetime.timedelta(days=1)
         query = "SELECT * from pitemp WHERE (time LIKE '{}%')".format(datetime.datetime.strftime(date, "%Y-%m-%d"))
         date = datetime.datetime.strftime(date, "%b %d %Y")
         get_data(query)
-        return render_template("day.html", day=date, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
+        return render_template("day.html", data=dict(RESPONSE, **{'day': date}))
 
 
 @app.route("/custom_view", methods=['GET', 'POST'])
 def custom_view():
+    global RESPONSE
+    
     if request.method == 'POST':
         days = request.get_data()
         days = days.decode()
@@ -138,7 +137,7 @@ def custom_view():
 
         get_data(query)
 
-        return jsonify({"days": days, "media": MEDIA, "chart": GRAPH_VALUES, "min_max": MIN_MAX}), 200
+        return jsonify(RESPONSE), 200
     else:
         end = datetime.datetime.now()
         start = end - datetime.timedelta(days=6)
@@ -147,7 +146,7 @@ def custom_view():
         get_data(query)
 
         date = [datetime.datetime.strftime(start, "%b %d %Y"), datetime.datetime.strftime(end, "%b %d %Y")]
-        return render_template("custom_range.html", days=date, graph_values=GRAPH_VALUES, min_max=MIN_MAX, media=MEDIA)
+        return render_template("custom_range.html", data=dict(RESPONSE, **{'days': date}))
 
 @app.route("/update", methods=["POST"])
 def curr_update():

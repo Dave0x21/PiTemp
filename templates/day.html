@@ -90,7 +90,7 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 id="day_title" class="m-0 text-dark">{{ day }}</h1>
+                            <h1 id="day_title" class="m-0 text-dark">{{ response.day }}</h1>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -236,23 +236,23 @@
                                         <tbody>
                                             <tr>
                                                 <td>Temperatura</td>
-                                                <td><a id="min_temp">{{ min_max.temp[0] }}</a><sup>°C</sup></td>
-                                                <td><a id="max_temp">{{ min_max.temp[1] }}</a><sup>°C</sup></td>
+                                                <td><a id="min_temp"></a><sup>°C</sup></td>
+                                                <td><a id="max_temp"></a><sup>°C</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Umidità</td>
-                                                <td><a id="min_hum">{{ min_max.hum[0] }}</a><sup>%</sup></td>
-                                                <td><a id="max_hum">{{ min_max.hum[1] }}</a><sup>%</sup></td>
+                                                <td><a id="min_hum"></a><sup>%</sup></td>
+                                                <td><a id="max_hum"></a><sup>%</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Luce</td>
-                                                <td><a id="min_lux">{{ min_max.lux[0] }}</a><sup>lx</sup></td>
-                                                <td><a id="max_lux">{{ min_max.lux[1] }}</a><sup>lx</sup></td>
+                                                <td><a id="min_lux"></a><sup>lx</sup></td>
+                                                <td><a id="max_lux"></a><sup>lx</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Pressione</td>
-                                                <td><a id="min_pres">{{ min_max.pres[0] }}</a><sup>hPa</sup></td>
-                                                <td><a id="max_pres">{{ min_max.pres[1] }}</a><sup>hPa</sup></td>
+                                                <td><a id="min_pres"></a><sup>hPa</sup></td>
+                                                <td><a id="max_pres"></a><sup>hPa</sup></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -277,19 +277,19 @@
                                         <tbody>
                                             <tr>
                                                 <td>Temperatura</td>
-                                                <td><a id="media_temp">{{ media.temp }}</a><sup>°C</sup></td>
+                                                <td><a id="media_temp"></a><sup>°C</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Umidità</td>
-                                                <td><a id="media_hum">{{ media.hum }}</a><sup>%</sup></td>
+                                                <td><a id="media_hum"></a><sup>%</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Luce</td>
-                                                <td><a id="media_lux">{{ media.lux }}</a><sup>lx</sup></td>
+                                                <td><a id="media_lux"></a><sup>lx</sup></td>
                                             </tr>
                                             <tr>
                                                 <td>Pressione</td>
-                                                <td><a id="media_pres">{{ media.pres }}</a><sup>hPa</sup></td>
+                                                <td><a id="media_pres"></a><sup>hPa</sup></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -337,9 +337,15 @@
     <!-- Custom JS -->
     <script>
         $(function () {
+            // Chart
+            var data = JSON.parse('{{ response|tojson }}');
+            var charts = { "temp": "", "hum": "", "lux": "" };
+            update_chart(charts, data, ChartOptions('hour'));
+            set_table(data.media, data.min_max);
+
             // Create Calendar
             $('#calendar').datetimepicker({
-                date: moment('{{ day }}', "MMM DD YYYY"),
+                date: moment(data.day, "MMM DD YYYY"),
                 maxDate: moment().add(-1, 'days'),
                 inline: true,
             });
@@ -354,15 +360,10 @@
                     return response.json();
                 }).then(function (response) {
                     $('#day_title').html(response.day);
-                    set_table(response);
-                    update_chart(charts, response.chart, ChartOptions('hour'), true);
+                    set_table(response.media, response.min_max);
+                    update_chart(charts, response, ChartOptions('hour'), true);
                 });
             });
-
-            // Chart
-            var graph_values = JSON.parse('{{ graph_values|tojson }}');
-            var charts = { "temp": "", "hum": "", "lux": "" };
-            update_chart(charts, graph_values, ChartOptions('hour'));
         });
     </script>
 </body>

@@ -360,8 +360,8 @@
                 },
                 startDate: moment().subtract(6, 'days'),
                 endDate: moment()
-
-            }, function (start, end) {
+            }, 
+            function (start, end) {
                 $('#period_txt').html(start.format('MMM DD YYYY') + ' - ' + end.format('MMM DD YYYY'));
 
                 date = {'start': start.format('YYYY-MM-DD'), 'end': end.format('YYYY-MM-DD')};

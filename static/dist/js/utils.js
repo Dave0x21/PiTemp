@@ -88,18 +88,18 @@ function pressure_icon(pressure) {
 
 function set_table(media, min_max) {
     $('#media_temp').html(media.temp);
-    $('#media_hum').html(media.hum);
-    $('#media_lux').html(media.lux);
-    $('#media_pres').html(media.pres);
+    $('#media_hum').html(media.humidity);
+    $('#media_lux').html(media.light);
+    $('#media_pres').html(media.pressure);
 
     $('#min_temp').html(min_max.temp[0]);
     $('#max_temp').html(min_max.temp[1]);
-    $('#min_hum').html(min_max.hum[0]);
-    $('#max_hum').html(min_max.hum[1]);
-    $('#min_lux').html(min_max.lux[0]);
-    $('#max_lux').html(min_max.lux[1]);
-    $('#min_pres').html(min_max.pres[0]);
-    $('#max_pres').html(min_max.pres[1]);
+    $('#min_hum').html(min_max.humidity[0]);
+    $('#max_hum').html(min_max.humidity[1]);
+    $('#min_lux').html(min_max.light[0]);
+    $('#max_lux').html(min_max.light[1]);
+    $('#min_pres').html(min_max.pressure[0]);
+    $('#max_pres').html(min_max.pressure[1]);
 };
 
 function parse_time(time) {

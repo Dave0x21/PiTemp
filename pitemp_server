@@ -67,8 +67,8 @@ def get_data(query):
     global RESPONSE
 
     RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [],
-                'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]},
-                'media': {"temp": 0, "hum": 0, "lux": 0, "pres": 0}}
+                'min_max': {"temp": [0, 0], "humidity": [0, 0], "light": [0, 0], "pressure": [0, 0]},
+                'media': {"temp": 0, "humidity": 0, "light": 0, "pressure": 0}}
 
     conn = sqlite3.connect(DB)
     conn.row_factory = dict_factory
@@ -77,20 +77,14 @@ def get_data(query):
     c.fetchall()
 
     try:
-        tot = float(len(RESPONSE['temp']))
-
-        RESPONSE['media']['temp'] = "{:.1f}".format(sum(RESPONSE['temp']) / tot)
-        RESPONSE['media']['hum'] = "{:.1f}".format(sum(RESPONSE['humidity']) / tot)
-        RESPONSE['media']['lux'] = "{:.1f}".format(sum(RESPONSE['light']) / tot)
-        RESPONSE['media']['pres'] = "{:.1f}".format(sum(RESPONSE['pressure']) / tot)
-
-        RESPONSE['min_max']['temp'] = [min(RESPONSE['temp']), max(RESPONSE['temp'])]
-        RESPONSE['min_max']['hum'] = [min(RESPONSE['humidity']), max(RESPONSE['humidity'])]
-        RESPONSE['min_max']['lux'] = [min(RESPONSE['light']), max(RESPONSE['light'])]
-        RESPONSE['min_max']['pres'] = [min(RESPONSE['pressure']), max(RESPONSE['pressure'])]
+        tot = float(len(RESPONSE['time']))
+        
+        for item in ('temp', 'humidity', 'light', 'pressure'):
+            RESPONSE['media'][item] = "{:.1f}".format(sum(RESPONSE[item]) / tot)
+            RESPONSE['min_max'][item] = [min(RESPONSE[item]), max(RESPONSE[item])]
     except ZeroDivisionError:
-        RESPONSE['media'] = {"temp": 0, "hum": 0, "lux": 0, "pres": 0}
-        RESPONSE['min_max'] = {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}
+        RESPONSE['media'] = {"temp": 0, "humidity": 0, "light": 0, "pressure": 0}
+        RESPONSE['min_max'] = {"temp": [0, 0], "humidity": [0, 0], "light": [0, 0], "pressure": [0, 0]}
 
 
 @app.route("/")

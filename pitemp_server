@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import datetime
-import json
 import logging
 import signal
 import sqlite3
@@ -9,12 +8,12 @@ import sys
 from threading import Event, Thread
 from time import sleep
 
-from flask import (Flask, Response, jsonify, render_template, request,
-                   send_from_directory, url_for)
+from flask import (Flask, jsonify, render_template,
+                   request, send_from_directory)
 from werkzeug.serving import make_server
 
-RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [], 
-            'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}, 
+RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [],
+            'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]},
             'media': {"temp": 0, "hum": 0, "lux": 0, "pres": 0}}
 DB = "/etc/pitemp/pitemp.db"
 
@@ -67,8 +66,8 @@ def dict_factory(cursor, row):
 def get_data(query):
     global RESPONSE
 
-    RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [], 
-                'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}, 
+    RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [],
+                'min_max': {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]},
                 'media': {"temp": 0, "hum": 0, "lux": 0, "pres": 0}}
 
     conn = sqlite3.connect(DB)
@@ -76,7 +75,7 @@ def get_data(query):
     c = conn.cursor()
     c.execute(query)
     c.fetchall()
-    
+
     try:
         tot = float(len(RESPONSE['temp']))
 
@@ -94,13 +93,12 @@ def get_data(query):
         RESPONSE['min_max'] = {"temp": [0, 0], "hum": [0, 0], "lux": [0, 0], "pres": [0, 0]}
 
 
-
 @app.route("/")
 def index():
     global RESPONSE
 
     get_data("SELECT * FROM pitemp WHERE time >= datetime('now', '-24 hours', 'localtime')")
-    return render_template("index.html", response = RESPONSE)
+    return render_template("index.html", response=RESPONSE)
 
 
 @app.route("/day_view", methods=['GET', 'POST'])
@@ -128,15 +126,16 @@ def day_view():
 @app.route("/custom_view", methods=['GET', 'POST'])
 def custom_view():
     global RESPONSE
-    
+
     if request.method == 'POST':
         days = request.get_data()
         days = days.decode()
         days = days.split(" - ")
         days[0] = datetime.datetime.strptime(days[0], '%b %d %Y')
         days[1] = datetime.datetime.strptime(days[1], '%b %d %Y')
-        
-        query = "SELECT * from pitemp WHERE time BETWEEN date('{}') AND date('{}')".format(datetime.datetime.strftime(days[0], "%Y-%m-%d"), datetime.datetime.strftime(days[1], "%Y-%m-%d"))
+
+        query = "SELECT * from pitemp WHERE time BETWEEN date('{}') AND date('{}')".format(
+            datetime.datetime.strftime(days[0], "%Y-%m-%d"), datetime.datetime.strftime(days[1], "%Y-%m-%d"))
 
         get_data(query)
 
@@ -145,12 +144,11 @@ def custom_view():
         end = datetime.datetime.now()
         start = end - datetime.timedelta(days=6)
         query = "SELECT * FROM pitemp WHERE time >= datetime('now', '-6 days', 'localtime')"
-        
+
         get_data(query)
 
         date = [datetime.datetime.strftime(start, "%b %d %Y"), datetime.datetime.strftime(end, "%b %d %Y")]
         return render_template("custom_range.html", data=dict(RESPONSE, **{'days': date}))
-
 
 
 @app.route("/static/<path:path>")

@@ -34,6 +34,7 @@ You can access the web dashboard from your browser with the **ip address/hostnam
 ## Todo
 * Real time update of current measurements and charts in home page
 * Add a logo
+* Implement a RestAPI
 
 ## Credits
 * **pitemp** file, wich make the measurements and dysplay them on onboard screen, is a modified version of [weather-and-light.py](https://github.com/pimoroni/enviroplus-python/blob/master/examples/weather-and-light.py) from [Enviro+ GitHub](https://github.com/pimoroni/enviroplus-python)

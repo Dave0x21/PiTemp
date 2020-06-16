@@ -37,7 +37,7 @@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="/" class="brand-link">
-                <img src="dist/img/AdminLTELogo.png" alt="PiTemp Logo" class="brand-image img-circle elevation-3"
+                <img src="dist/img/logo.png" alt="PiTemp Logo" class="brand-image img-circle elevation-3"
                     style="opacity: 0.8;" />
                 <span class="brand-text font-weight-light">PiTemp</span>
             </a>
@@ -369,7 +369,7 @@
     <script src="plugins/moment/moment.min.js"></script>
     <script src="plugins/chart.js/Chart.min.js"></script>
 
-    <script src="dist/js/utils.js"></script>
+    <script src="dist/js/utils.min.js"></script>
 
     <!-- Custom JS -->
     <script>
@@ -389,7 +389,6 @@
             $('#trend').addClass(trend_icon(last(data.trend)));
             // Set pressure icon
             $("#pressure_icon").addClass(pressure_icon(lastPressure));
-
             set_table(data.media, data.min_max);
         });
     </script>

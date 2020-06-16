@@ -127,7 +127,7 @@
                         </div>
                         <div class="card-body">
                             <div>
-                                <h1 id=period_txt>{{ response.days[0] }} - {{ response.days[1] }}</h1>
+                                <h1 id=period_txt></h1>
                             </div>
                         </div>
                         <!-- /.card-body-->
@@ -334,6 +334,7 @@
     <script src="dist/js/adminlte.min.js"></script>
     <!-- ChartJS -->
     <script src="plugins/moment/moment.min.js"></script>
+    <script src="plugins/moment/locale/it.js"></script>
     <script src="plugins/chart.js/Chart.min.js"></script>
     <!-- daterangepicker -->
     <script src="plugins/daterangepicker/daterangepicker.js"></script>
@@ -344,8 +345,9 @@
     <script>
         $(function () {
             var data = JSON.parse('{{ response|tojson }}');
-
             var charts = { "temp": "", "hum": "", "lux": "" };
+
+            $('#period_txt').html(moment().subtract(6, 'days').format('DD MMMM YYYY') + ' - ' + moment().format('DD MMMMM YYYY'))
             update_chart(charts, data, ChartOptions('day'));
             set_table(data.media, data.min_max);
 
@@ -355,21 +357,18 @@
                     'Ultimi 30 Giorni': [moment().subtract(29, 'days'), moment()],
                     'Questo Mese': [moment().startOf('month'), moment().endOf('month')],
                     'Ultimo Mese': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Questo Anno': [moment().startOf('year'), moment().endOf('year')],
                 },
                 startDate: moment().subtract(6, 'days'),
                 endDate: moment()
+
             }, function (start, end) {
                 $('#period_txt').html(start.format('MMM DD YYYY') + ' - ' + end.format('MMM DD YYYY'));
-                fetch('/custom_view', {
-                    method: 'POST',
-                    body: start.format('MMM DD YYYY') + ' - ' + end.format('MMM DD YYYY')
-                }).then(function (response) {
-                    return response.json();
-                }).then(function (response) {
+
+                date = {'start': start.format('YYYY-MM-DD'), 'end': end.format('YYYY-MM-DD')};
+                $.post('/custom_view', date, function (response){
                     set_table(response.media, response.min_max);
                     update_chart(charts, response, ChartOptions('day'), true);
-                })
+                });
             });
         });
     </script>

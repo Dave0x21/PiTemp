@@ -90,7 +90,7 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 id="day_title" class="m-0 text-dark">{{ response.day }}</h1>
+                            <h1 id="day_title" class="m-0 text-dark"></h1>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -328,6 +328,7 @@
     <script src="dist/js/adminlte.min.js"></script>
     <!-- ChartJS -->
     <script src="plugins/moment/moment.min.js"></script>
+    <script src="plugins/moment/locale/it.js"></script>
     <script src="plugins/chart.js/Chart.min.js"></script>
     <!-- Tempusdominus Bootstrap 4 -->
     <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
@@ -337,29 +338,28 @@
     <!-- Custom JS -->
     <script>
         $(function () {
+            moment.locale('it');
             // Chart
             var data = JSON.parse('{{ response|tojson }}');
             var charts = { "temp": "", "hum": "", "lux": "" };
+            $('#day_title').html(moment().add(-1, 'days').format('DD MMMM YYYY'));
             update_chart(charts, data, ChartOptions('hour'));
             set_table(data.media, data.min_max);
 
             // Create Calendar
             $('#calendar').datetimepicker({
-                date: moment(data.day, "MMM DD YYYY"),
+                format: 'L',
+                date: moment().add(-1, 'days'),
                 maxDate: moment().add(-1, 'days'),
                 inline: true,
             });
 
             // On Change Date Event
             $('#calendar').on("change.datetimepicker", function (e) {
-                var date = { "data": String(e.date._d) };
-                fetch('/day_view', {
-                    method: 'POST',
-                    body: JSON.stringify(date.data)
-                }).then(function (response) {
-                    return response.json();
-                }).then(function (response) {
-                    $('#day_title').html(response.day);
+                var date = {'day': $('#calendar').datetimepicker('date').format('YYYY-MM-DD')};
+
+                $.post('/day_view', date, function (response){
+                    $('#day_title').html(date.day);
                     set_table(response.media, response.min_max);
                     update_chart(charts, response, ChartOptions('hour'), true);
                 });

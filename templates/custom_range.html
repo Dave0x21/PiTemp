@@ -354,7 +354,7 @@
                 startDate: moment().subtract(6, 'days'),
                 endDate: moment()
             }, function (start, end) {
-                document.getElementById('period_txt').innerHTML = start.format('MMM DD YYYY') + ' - ' + end.format('MMM DD YYYY');
+                $('#period_txt').html(start.format('MMM DD YYYY') + ' - ' + end.format('MMM DD YYYY'));
                 fetch('/custom_view', {
                     method: 'POST',
                     body: start.format('MMM DD YYYY') + ' - ' + end.format('MMM DD YYYY')

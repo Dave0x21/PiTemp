@@ -361,8 +361,6 @@
 
             // Chart
             var graph_values = JSON.parse('{{ graph_values|tojson }}');
-
-            // Create Chart
             var charts = { "temp": "", "hum": "", "lux": "" };
             update_chart(charts, graph_values, ChartOptions('hour'));
         });

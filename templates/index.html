@@ -383,11 +383,7 @@
             $("#pressure_icon").addClass(pressure_icon(pressure));
 
             // Chart
-            var tempChart, humChart, luxChart;
-            var graph_values = '{{ graph_values|tojson }}';
-            graph_values = JSON.parse(graph_values);
-
-            // Create Chart
+            var graph_values = JSON.parse('{{ graph_values|tojson }}');
             var charts = {"temp": "", "hum": "", "lux": ""};
             update_chart(charts, graph_values, ChartOptions('hour'));
         });

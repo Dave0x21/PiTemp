@@ -12,11 +12,8 @@ from flask import (Flask, jsonify, render_template,
                    request, send_from_directory)
 from werkzeug.serving import make_server
 
-RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [],
-            'min_max': {"temp": [0, 0], "humidity": [0, 0], "light": [0, 0], "pressure": [0, 0]},
-            'media': {"temp": 0, "humidity": 0, "light": 0, "pressure": 0}}
+RESPONSE = {}
 DB = "/etc/pitemp/pitemp.db"
-
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -55,80 +52,117 @@ class WebServerThread(Thread):
         logging.info('Stopping PiTemp server')
         self.srv.shutdown()
 
+################
+#     UTILS    #
+################
 
-def dict_factory(cursor, row):
+def dict_factory_array(cursor, row):
     global RESPONSE
     for idx, col in enumerate(cursor.description):
+        if col[0] not in RESPONSE:
+            RESPONSE[col[0]] = []
+
         RESPONSE[col[0]].append(row[idx])
     return RESPONSE
 
+def dict_factory_simple(cursor, row):
+    d = {} 
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = (row[idx])
+    return d
 
-def get_data(query):
+def get_query(measure, msg):
+    if measure == 'temperature':
+        query = 'SELECT time, temp '
+    elif measure == 'humidity':
+        query = 'SELECT time, humidity '
+    elif measure == 'light':
+        query = 'SELECT time, humidity '
+    else:
+        return 'Invalid request'
+    
+    query += msg
+
+    return query
+
+def get_data_array(query):
     global RESPONSE
-
-    RESPONSE = {'time': [], 'temp': [], 'humidity': [], 'light': [], 'pressure': [], 'trend': [],
-                'min_max': {"temp": [0, 0], "humidity": [0, 0], "light": [0, 0], "pressure": [0, 0]},
-                'media': {"temp": 0, "humidity": 0, "light": 0, "pressure": 0}}
-
+    RESPONSE = {}
+    
     conn = sqlite3.connect(DB)
-    conn.row_factory = dict_factory
+    conn.row_factory = dict_factory_array
     c = conn.cursor()
     c.execute(query)
-    c.fetchall()
 
-    try:
-        tot = float(len(RESPONSE['time']))
-        
-        for item in ('temp', 'humidity', 'light', 'pressure'):
-            RESPONSE['media'][item] = "{:.1f}".format(sum(RESPONSE[item]) / tot)
-            RESPONSE['min_max'][item] = [min(RESPONSE[item]), max(RESPONSE[item])]
-    except ZeroDivisionError:
-        RESPONSE['media'] = {"temp": 0, "humidity": 0, "light": 0, "pressure": 0}
-        RESPONSE['min_max'] = {"temp": [0, 0], "humidity": [0, 0], "light": [0, 0], "pressure": [0, 0]}
+    return jsonify(c.fetchall())
 
+
+################
+#   WEB PAGE   #
+################
 
 @app.route("/")
 def index():
-    global RESPONSE
-
-    get_data("SELECT time, temp, humidity, light, pressure, trend FROM pitemp WHERE time >= datetime('now', '-24 hours', 'localtime')")
-    return render_template("index.html", response=RESPONSE)
+    return render_template("index.html")
 
 
-@app.route("/day_view", methods=['GET', 'POST'])
+@app.route("/day_view")
 def day_view():
-    global RESPONSE
-
-    if request.method == 'POST':
-        date = request.get_data().decode()
-        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE (time LIKE '{}%')".format(date)
-        get_data(query)
-
-        return jsonify(RESPONSE), 200
-    else:
-        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE time BETWEEN date('now', '-1 days', 'localtime') AND date('now', 'localtime')"
-        get_data(query)
-
-        return render_template("day.html", response=RESPONSE)
+    return render_template("day.html")
 
 
-@app.route("/custom_view", methods=['GET', 'POST'])
+@app.route("/custom_view")
 def custom_view():
+    return render_template("custom_range.html")
+
+
+###############
+#     API     #
+###############
+
+@app.route("/api/current_readings")
+def api_current_readings():
+    query = 'select temp, humidity, light, pressure, trend as pressure_trend from pitemp order by id desc limit 1'
+    
+    conn = sqlite3.connect(DB)
+    conn.row_factory = dict_factory_simple
+    c = conn.cursor()
+    c.execute(query)
+
+    return jsonify(c.fetchone())
+    
+@app.route("/api/last_24h/<measure>")
+def api_last_24h(measure):
     global RESPONSE
+    RESPONSE = {}
 
-    if request.method == 'POST':
-        date = eval(request.get_data().decode())
+    query  = get_query(measure, 'FROM pitemp WHERE time >= datetime("now", "-24 hours", "localtime")')
 
-        query = "SELECT time, temp, humidity, light, pressure, trend from pitemp WHERE time BETWEEN date('{}') AND date('{}')".format(date['start'], date['end'])
-        get_data(query)
-
-        return jsonify(RESPONSE), 200
+    if query == 'Invalid request':
+        return jsonify({'error': query})
     else:
-        query = "SELECT time, temp, humidity, light, pressure, trend FROM pitemp WHERE time >= datetime('now', '-6 days', 'localtime')"
-        get_data(query)
+        return get_data_array(query)
+    
 
-        return render_template("custom_range.html", response=RESPONSE)
+@app.route("/api/day/<day>/<measure>")
+def api_day(day, measure):
+    query  = get_query(measure, 'FROM pitemp WHERE (time LIKE "{}%")'.format(day))
 
+    if query == 'Invalid request':
+        return jsonify({'error': query})
+    else:
+        return get_data_array(query)
+
+
+@app.route("/api/range/<start>/<end>/<measure")
+def api_range(start, end, measure):
+    query  = get_query(measure, 'FROM pitemp time BETWEEN date("{}") AND date("{}")'.format(start, end))
+
+    if query == 'Invalid request':
+        return jsonify({'error': query})
+    else:
+        return get_data_array(query)
+    
 
 @app.route("/static/<path:path>")
 def send_static(path):

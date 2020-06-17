@@ -86,20 +86,10 @@ function pressure_icon(pressure) {
     }
 };
 
-function set_table(media, min_max) {
-    $('#media_temp').html(media.temp);
-    $('#media_hum').html(media.humidity);
-    $('#media_lux').html(media.light);
-    $('#media_pres').html(media.pressure);
-
-    $('#min_temp').html(min_max.temp[0]);
-    $('#max_temp').html(min_max.temp[1]);
-    $('#min_hum').html(min_max.humidity[0]);
-    $('#max_hum').html(min_max.humidity[1]);
-    $('#min_lux').html(min_max.light[0]);
-    $('#max_lux').html(min_max.light[1]);
-    $('#min_pres').html(min_max.pressure[0]);
-    $('#max_pres').html(min_max.pressure[1]);
+function set_table(ids, data) {
+    $(ids.media).html(data.media);
+    $(ids.min).html(data.min);
+    $(ids.max).html(data.max);
 };
 
 function parse_time(time) {
@@ -109,25 +99,65 @@ function parse_time(time) {
     return time;
 };
 
-function update_chart(charts, data, chartOptions, destroy=false) {
+function calculate_table(arr){
+    var sum = 0;
+    for(var i in arr) {
+        sum += arr[i];
+    }
+
+    return {'media': sum / arr.length, 'min': Math.min.apply(null, arr), 'max': Math.max.apply(null, arr)}
+}
+
+
+function update_chart(charts, api, chartOptions, destroy=false) {
     if (destroy){
         charts.temp.destroy();
         charts.hum.destroy();
         charts.lux.destroy();
     }
-    data.time = parse_time(data.time);
-    charts.temp = create_chart('#tempChart', data.time, data.temp, chartOptions, "Temperatura", "rgba(23,162,184,0.5)", "rgba(23,162,184,1)");
-    charts.hum = create_chart('#umidChart', data.time, data.humidity, chartOptions, "Umidità", "rgba(40,167,69,0.5)", "rgba(40,167,69,1)");
-    charts.lux = create_chart("#luxChart", data.time, data.light, chartOptions, "Luce", "rgba(255,193,7,0.5)", "rgba(255,193,7,1)");
+    // TODO: Remove loading class
+    $.get(`/api/${api}/temperature`, function(data){
+        var id ={'media': '#media_temp', 'min': '#min_temp', 'max': '#max_temp'};
+        var values = calculate_table(data.temp);
+
+        data.time = parse_time(data.time);
+        charts.temp = create_chart('#tempChart', data.time, data.temp, chartOptions, "Temperatura", "rgba(23,162,184,0.5)", "rgba(23,162,184,1)");
+        set_table(id, values);
+    }, 'json');
+
+    $.get(`/api/${api}/humidity`, function(data){
+        var id ={'media': '#umid_temp', 'min': '#min_umid', 'max': '#max_umid'};
+        var values = calculate_table(data.humidity);
+
+        data.time = parse_time(data.time);
+        charts.hum = create_chart('#umidChart', data.time, data.humidity, chartOptions, "Umidità", "rgba(40,167,69,0.5)", "rgba(40,167,69,1)");
+        set_table(id, values)
+    }, 'json');
+
+    $.get(`/api/${api}/light`, function(data){
+        var id ={'media': '#media_lux', 'min': '#min_lux', 'max': '#max_lux'};
+        var values = calculate_table(data.light);
+
+        data.time = parse_time(data.time);
+        charts.lux = create_chart("#luxChart", data.time, data.light, chartOptions, "Luce", "rgba(255,193,7,0.5)", "rgba(255,193,7,1)");
+        set_table(id, values)
+    }, 'json');
 };
 
-function set_currentValue(temp, hum, lux, pres) {
-    $('#curr_temp').html(temp);
-    $('#curr_hum').html(hum);
-    $('#curr_lux').html(lux);
-    $('#curr_pres').html(pres);
-};
+function set_currentValue(data){
+    $('#curr_temp').html(data.temp);
+    $('#overlay_temp').removeClass('overlay dark');
+    $('#spin_temp').removeClass('fas fa-3x fa-sync-alt fa-spin');
 
-function last(array) {
-    return array[array.length - 1];
-}
+    $('#curr_hum').html(data.humidity);
+    $('#overlay_hum').removeClass('overlay dark');
+    $('#spin_hum').removeClass('fas fa-3x fa-sync-alt fa-spin');
+
+    $('#curr_lux').html(data.light);
+    $('#overlay_lux').removeClass('overlay dark');
+    $('#spin_lux').removeClass('fas fa-3x fa-sync-alt fa-spin');
+
+    $('#curr_pres').html(data.pressure);
+    $('#overlay_pres').removeClass('overlay dark');
+    $('#spin_pres').removeClass('fas fa-3x fa-sync-alt fa-spin');
+};

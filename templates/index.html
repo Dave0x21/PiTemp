@@ -106,6 +106,9 @@
                         <div class="col-12 col-sm-6 col-md-3">
                             <!-- small box -->
                             <div class="small-box bg-info">
+                                <div id="overlay_temp" class="overlay dark">
+                                    <i id="spin_temp" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                                 <div class="inner">
                                     <h3><a id="curr_temp"></a><sup
                                             style="font-size: 20px;">°C</sup></h3>
@@ -121,6 +124,9 @@
                         <div class="col-12 col-sm-6 col-md-3">
                             <!-- small box -->
                             <div class="small-box bg-success">
+                                <div id="overlay_hum" class="overlay dark">
+                                    <i id="spin_hum" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                                 <div class="inner">
                                     <h3><a id="curr_hum"></a><sup
                                             style="font-size: 20px;">%</sup></h3>
@@ -136,6 +142,9 @@
                         <div class="col-12 col-sm-6 col-md-3">
                             <!-- small box -->
                             <div class="small-box bg-warning">
+                                <div id="overlay_lux" class="overlay dark">
+                                    <i id="spin_lux" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                                 <div class="inner">
                                     <h3><a id="curr_lux"></a><sup
                                             style="font-size: 20px;">lx</sup></h3>
@@ -151,6 +160,9 @@
                         <div class="col-12 col-sm-6 col-md-3">
                             <!-- small box -->
                             <div class="small-box bg-danger">
+                                <div id="overlay_pres" class="overlay dark">
+                                    <i id="spin_pres" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                                 <div class="inner">
                                     <h3><i id="trend" class="fas"></i> <a
                                             id="curr_pres"></a><sup
@@ -193,6 +205,9 @@
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
+                                <div id="overlay_temp_chart" class="overlay dark">
+                                    <i id="spin_temp_chart" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                             </div>
                             <!-- /.temperature chart -->
                         </div>
@@ -221,6 +236,9 @@
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
+                                <div id="overlay_hum_chart" class="overlay dark">
+                                    <i id="spin_hum_chart" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                             </div>
                             <!-- /.humidity chart -->
                         </div>
@@ -251,6 +269,9 @@
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
+                                <div id="overlay_lux_chart" class="overlay dark">
+                                    <i id="spin_lux_chart" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                             </div>
                             <!-- /.lux chart -->
                         </div>
@@ -374,24 +395,17 @@
     <!-- Custom JS -->
     <script>
         $(function () {
-            // Get values
-            var data = JSON.parse('{{ response|tojson }}');
-            var lastPressure = last(data.pressure);
-
             // Set current value
-            set_currentValue(last(data.temp), last(data.humidity), last(data.light), lastPressure);
+            $.get('/api/current_readings', function(data){
+                set_currentValue(data);
+                $('#trend').addClass(trend_icon(last(data.trend)));
+                $("#pressure_icon").addClass(pressure_icon(data.pressure));
+            }, 'json');
 
-            // Chart
-            var charts = {"temp": "", "hum": "", "lux": ""};
-            update_chart(charts, data, ChartOptions('hour'));
-
-            // Set Trend icon
-            $('#trend').addClass(trend_icon(last(data.trend)));
-            // Set pressure icon
-            $("#pressure_icon").addClass(pressure_icon(lastPressure));
-            set_table(data.media, data.min_max);
+            update_chart(charts, 'last_24h', ChartOptions('hour'));
         });
     </script>
 </body>
 
 </html>
+<!-- TODO: Add class for loading -->

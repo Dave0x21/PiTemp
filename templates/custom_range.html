@@ -344,12 +344,13 @@
     <!-- Custom JS -->
     <script>
         $(function () {
-            var data = JSON.parse('{{ response|tojson }}');
             var charts = { "temp": "", "hum": "", "lux": "" };
+            var date = {'start': moment().subtract(6, 'days'), 'end': moment()};
+            var request = 'range/' + date.start.format('YYYY-MM-DD') + '/' + date.end.format('YYYY-MM-DD');
 
-            $('#period_txt').html(moment().subtract(6, 'days').format('DD MMMM YYYY') + ' - ' + moment().format('DD MMMM YYYY'))
-            update_chart(charts, data, ChartOptions('day'));
-            set_table(data.media, data.min_max);
+            // Update Currnt Period Label and Charts
+            $('#period_txt').html(date.start.format('DD MMMM YYYY') + ' - ' + date.end.format('DD MMMM YYYY'));
+            update_chart(charts, request, ChartOptions('day'));
 
             $('.daterange').daterangepicker({
                 ranges: {
@@ -358,17 +359,15 @@
                     'Questo Mese': [moment().startOf('month'), moment().endOf('month')],
                     'Ultimo Mese': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                 },
-                startDate: moment().subtract(6, 'days'),
-                endDate: moment()
+                startDate: date.start,
+                endDate: date.end
             }, 
             function (start, end) {
-                $('#period_txt').html(start.format('DD MMMM YYYY') + ' - ' + end.format('DD MMMM YYYY'));
+                request = 'range/' + start.format('YYYY-MM-DD') + '/' + end.format('YYYY-MM-DD');
 
-                date = {'start': start.format('YYYY-MM-DD'), 'end': end.format('YYYY-MM-DD')};
-                $.post('/custom_view', JSON.stringify(date), function (response){
-                    set_table(response.media, response.min_max);
-                    update_chart(charts, response, ChartOptions('day'), true);
-                });
+                // Update Curret Period Label and Charts
+                $('#period_txt').html(start.format('DD MMMM YYYY') + ' - ' + end.format('DD MMMM YYYY'));
+                update_chart(charts, request, ChartOptions('day'), true);
             });
         });
     </script>

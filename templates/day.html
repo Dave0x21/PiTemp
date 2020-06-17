@@ -340,11 +340,13 @@
         $(function () {
             moment.locale('it');
             // Chart
-            var data = JSON.parse('{{ response|tojson }}');
             var charts = { "temp": "", "hum": "", "lux": "" };
-            $('#day_title').html(moment().add(-1, 'days').format('DD MMMM YYYY'));
-            update_chart(charts, data, ChartOptions('hour'));
-            set_table(data.media, data.min_max);
+            var day = moment().add(-1, 'days');
+            var request = 'day/' + day.format('YYYY-MM-DD')
+
+            // Update Title and Charts
+            $('#day_title').html(day.format('DD MMMM YYYY'));
+            update_chart(charts, request, ChartOptions('hour'));
 
             // Create Calendar
             $('#calendar').datetimepicker({
@@ -356,12 +358,12 @@
 
             // On Change Date Event
             $('#calendar').on("change.datetimepicker", function (e) {
-		var date = $('#calendar').datetimepicker('date').format('YYYY-MM-DD');
-                $('#day_title').html($('#calendar').datetimepicker('date').format('DD MMMM YYYY'));
-                $.post('/day_view', date, function (response){ $('#day_title').html(date.day);
-                    set_table(response.media, response.min_max);
-                    update_chart(charts, response, ChartOptions('hour'), true);
-                });
+                day = $('#calendar').datetimepicker('date');
+                request = 'day/' + day.format('YYYY-MM-DD');
+
+                // Update Title and Charts
+                $('#day_title').html(day.format('DD MMMM YYYY'));
+                update_chart(charts, request, ChartOptions('hour'), true);
             });
         });
     </script>

@@ -123,6 +123,8 @@ function update_chart(charts, api, chartOptions, destroy=false) {
         data.time = parse_time(data.time);
         charts.temp = create_chart('#tempChart', data.time, data.temp, chartOptions, "Temperatura", "rgba(23,162,184,0.5)", "rgba(23,162,184,1)");
         set_table(id, values);
+        $('#overlay_temp_chart').removeClass('overlay dark');
+        $('#spin_temp_chart').removeClass('fas fa-3x fa-sync-alt fa-spin');
     }, 'json');
 
     $.get(`/api/${api}/humidity`, function(data){
@@ -131,7 +133,9 @@ function update_chart(charts, api, chartOptions, destroy=false) {
 
         data.time = parse_time(data.time);
         charts.hum = create_chart('#umidChart', data.time, data.humidity, chartOptions, "Umidità", "rgba(40,167,69,0.5)", "rgba(40,167,69,1)");
-        set_table(id, values)
+        set_table(id, values);
+        $('#overlay_hum_chart').removeClass('overlay dark');
+        $('#spin_hum_chart').removeClass('fas fa-3x fa-sync-alt fa-spin');
     }, 'json');
 
     $.get(`/api/${api}/light`, function(data){
@@ -140,7 +144,9 @@ function update_chart(charts, api, chartOptions, destroy=false) {
 
         data.time = parse_time(data.time);
         charts.lux = create_chart("#luxChart", data.time, data.light, chartOptions, "Luce", "rgba(255,193,7,0.5)", "rgba(255,193,7,1)");
-        set_table(id, values)
+        set_table(id, values);
+        $('#overlay_lux_chart').removeClass('overlay dark');
+        $('#spin_lux_chart').removeClass('fas fa-3x fa-sync-alt fa-spin');
     }, 'json');
 };
 

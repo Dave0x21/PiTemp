@@ -58,6 +58,7 @@ class WebServerThread(Thread):
 
 def dict_factory_array(cursor, row):
     global RESPONSE
+
     for idx, col in enumerate(cursor.description):
         if col[0] not in RESPONSE:
             RESPONSE[col[0]] = []
@@ -94,7 +95,10 @@ def get_data_array(query):
     c = conn.cursor()
     c.execute(query)
 
-    return jsonify(c.fetchall())
+    data = c.fetchall
+    conn.close()
+
+    return jsonify(data)
 
 
 ################
@@ -129,12 +133,14 @@ def api_current_readings():
     c = conn.cursor()
     c.execute(query)
 
-    return jsonify(c.fetchone())
+    data = c.fetchone()
+
+    conn.close()
+
+    return jsonify(data)
     
 @app.route("/api/last_24h/<measure>")
 def api_last_24h(measure):
-    global RESPONSE
-    RESPONSE = {}
 
     query  = get_query(measure, 'FROM pitemp WHERE time >= datetime("now", "-24 hours", "localtime")')
 
@@ -154,7 +160,7 @@ def api_day(day, measure):
         return get_data_array(query)
 
 
-@app.route("/api/range/<start>/<end>/<measure")
+@app.route("/api/range/<start>/<end>/<measure>")
 def api_range(start, end, measure):
     query  = get_query(measure, 'FROM pitemp time BETWEEN date("{}") AND date("{}")'.format(start, end))
 

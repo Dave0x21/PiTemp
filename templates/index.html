@@ -395,10 +395,11 @@
     <!-- Custom JS -->
     <script>
         $(function () {
+            var charts = { "temp": "", "hum": "", "lux": "" };
             // Set current value
             $.get('/api/current_readings', function(data){
                 set_currentValue(data);
-                $('#trend').addClass(trend_icon(last(data.trend)));
+                $('#trend').addClass(trend_icon(data.trend));
                 $("#pressure_icon").addClass(pressure_icon(data.pressure));
             }, 'json');
 
@@ -408,4 +409,3 @@
 </body>
 
 </html>
-<!-- TODO: Add class for loading -->

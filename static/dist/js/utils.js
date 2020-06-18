@@ -115,7 +115,7 @@ function update_chart(charts, api, chartOptions, destroy=false) {
         charts.hum.destroy();
         charts.lux.destroy();
     }
-    // TODO: Remove loading class
+
     $.get(`/api/${api}/temperature`, function(data){
         var id ={'media': '#media_temp', 'min': '#min_temp', 'max': '#max_temp'};
         var values = calculate_table(data.temp);

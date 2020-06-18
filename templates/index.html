@@ -110,8 +110,7 @@
                                     <i id="spin_temp" class="fas fa-3x fa-sync-alt fa-spin"></i>
                                 </div>
                                 <div class="inner">
-                                    <h3><a id="curr_temp"></a><sup
-                                            style="font-size: 20px;">°C</sup></h3>
+                                    <h3><a id="curr_temp"></a><sup style="font-size: 20px;">°C</sup></h3>
 
                                     <p>Temperatura</p>
                                 </div>
@@ -128,8 +127,7 @@
                                     <i id="spin_hum" class="fas fa-3x fa-sync-alt fa-spin"></i>
                                 </div>
                                 <div class="inner">
-                                    <h3><a id="curr_hum"></a><sup
-                                            style="font-size: 20px;">%</sup></h3>
+                                    <h3><a id="curr_hum"></a><sup style="font-size: 20px;">%</sup></h3>
 
                                     <p>Umidità</p>
                                 </div>
@@ -146,8 +144,7 @@
                                     <i id="spin_lux" class="fas fa-3x fa-sync-alt fa-spin"></i>
                                 </div>
                                 <div class="inner">
-                                    <h3><a id="curr_lux"></a><sup
-                                            style="font-size: 20px;">lx</sup></h3>
+                                    <h3><a id="curr_lux"></a><sup style="font-size: 20px;">lx</sup></h3>
 
                                     <p>Luce</p>
                                 </div>
@@ -164,8 +161,7 @@
                                     <i id="spin_pres" class="fas fa-3x fa-sync-alt fa-spin"></i>
                                 </div>
                                 <div class="inner">
-                                    <h3><i id="trend" class="fas"></i> <a
-                                            id="curr_pres"></a><sup
+                                    <h3><i id="trend" class="fas"></i> <a id="curr_pres"></a><sup
                                             style="font-size: 20px;">hPa</sup></h3>
 
                                     <p>Pressione</p>
@@ -397,7 +393,7 @@
         $(function () {
             var charts = { "temp": "", "hum": "", "lux": "" };
             // Set current value
-            $.get('/api/current_readings', function(data){
+            $.get('/api/current_readings', function (data) {
                 set_currentValue(data);
                 $('#trend').addClass(trend_icon(data.trend));
                 $("#pressure_icon").addClass(pressure_icon(data.pressure));

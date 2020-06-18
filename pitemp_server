@@ -90,13 +90,12 @@ def get_data_array(query):
     global RESPONSE
     RESPONSE = {}
     
-    conn = sqlite3.connect(DB)
-    conn.row_factory = dict_factory_array
-    c = conn.cursor()
-    c.execute(query)
+    with sqlite3.connect(DB) as conn:
+        conn.row_factory = dict_factory_array
+        c = conn.cursor()
+        c.execute(query)
 
-    data = c.fetchall
-    conn.close()
+        data = c.fetchall
 
     return jsonify(data)
 
@@ -128,14 +127,11 @@ def custom_view():
 def api_current_readings():
     query = 'select temp, humidity, light, pressure, trend as pressure_trend from pitemp order by id desc limit 1'
     
-    conn = sqlite3.connect(DB)
-    conn.row_factory = dict_factory_simple
-    c = conn.cursor()
-    c.execute(query)
-
-    data = c.fetchone()
-
-    conn.close()
+    with sqlite3.connect(DB) as conn:
+        conn.row_factory = dict_factory_simple
+        c = conn.cursor()
+        c.execute(query)
+        data = c.fetchone()
 
     return jsonify(data)
     
@@ -162,7 +158,7 @@ def api_day(day, measure):
 
 @app.route("/api/range/<start>/<end>/<measure>")
 def api_range(start, end, measure):
-    query  = get_query(measure, 'FROM pitemp time BETWEEN date("{}") AND date("{}")'.format(start, end))
+    query  = get_query(measure, 'FROM pitemp WHERE time BETWEEN date("{}") AND date("{}")'.format(start, end))
 
     if query == 'Invalid request':
         return jsonify({'error': query})

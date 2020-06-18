@@ -35,19 +35,17 @@ def db_write():
         f.close()
 
         # Create table
-        conn = sqlite3.connect(DB)
-        c = conn.cursor()
-        c.execute("""CREATE TABLE pitemp (
-            ID	INTEGER PRIMARY KEY,
-            time	TEXT,
-            temp	REAL,
-            humidity	INTEGER,
-            light	INTEGER,
-            pressure	INTEGER,
-            trend TEXT
-        )""")
-        conn.commit()
-        conn.close()
+        with sqlite3.connect(DB) as conn:
+            c = conn.cursor()
+            c.execute("""CREATE TABLE pitemp (
+                ID	INTEGER PRIMARY KEY,
+                time	TEXT,
+                temp	REAL,
+                humidity	INTEGER,
+                light	INTEGER,
+                pressure	INTEGER,
+                trend TEXT
+            )""")
 
 
     time.sleep(10)  # Sleep some seconds to adjust measurements
@@ -58,12 +56,10 @@ def db_write():
         measurement = (now, temp, int(corr_humidity),
                        int(light), int(pressure), trend)
 
-        conn = sqlite3.connect(DB)
-        c = conn.cursor()
-        c.execute("INSERT INTO pitemp (time, temp, humidity, light, pressure, trend) \
-                      VALUES (?, ?, ?, ?, ?, ?)", measurement)
-        conn.commit()
-        conn.close()
+        with sqlite3.connect(DB) as conn:
+            c = conn.cursor()
+            c.execute("INSERT INTO pitemp (time, temp, humidity, light, pressure, trend) \
+                        VALUES (?, ?, ?, ?, ?, ?)", measurement)
         time.sleep(60)  # 1 min
 
 

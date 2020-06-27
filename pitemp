@@ -5,6 +5,7 @@ import time
 import numpy
 import colorsys
 import sqlite3
+import subprocess
 from threading import Thread
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from fonts.ttf import RobotoMedium as UserFont
@@ -51,6 +52,10 @@ def db_write():
 
     time.sleep(10)  # Sleep some seconds to adjust measurements
     while True:
+        used = subprocess.Popen('fuser {}'.format(DB),shell=True, stdout=subprocess.PIPE).stdout.read()
+        while used.decode() != '':
+            time.sleep(0.1)
+            used = subprocess.Popen('fuser {}'.format(DB), shell=True, stdout=subprocess.PIPE).stdout.read()
         now = datetime.now()
         now = datetime.strftime(now, "%Y-%m-%d %H:%M")
         temp = float("{:.1f}".format(corr_temperature))

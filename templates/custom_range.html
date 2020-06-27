@@ -144,26 +144,28 @@
                                         <i class="fas fa-thermometer-full"></i> Temperatura
                                     </h3>
                                     <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                                                class="fa fa-minus"></i>
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fa fa-minus"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart">
                                         <canvas id="tempChart" style="
-                                      min-height: 250px;
-                                      height: 250px;
-                                      max-height: 250px;
-                                      max-width: 100%;
-                                    "></canvas>
+                                              min-height: 250px;
+                                              height: 250px;
+                                              max-height: 250px;
+                                              max-width: 100%;
+                                            "></canvas>
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
+                                <div id="overlay_temp_chart" class="overlay dark">
+                                    <i id="spin_temp_chart" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                             </div>
                             <!-- /.temperature chart -->
                         </div>
-
+                    
                         <div class="col-12">
                             <!-- Humidity Chart -->
                             <div class="card">
@@ -172,26 +174,28 @@
                                         <i class="fas fa-tint"></i> Umidità
                                     </h3>
                                     <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                                                class="fa fa-minus"></i>
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fa fa-minus"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart">
                                         <canvas id="umidChart" style="
-                                      min-height: 250px;
-                                      height: 250px;
-                                      max-height: 250px;
-                                      max-width: 100%;
-                                    "></canvas>
+                                              min-height: 250px;
+                                              height: 250px;
+                                              max-height: 250px;
+                                              max-width: 100%;
+                                            "></canvas>
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
+                                <div id="overlay_hum_chart" class="overlay dark">
+                                    <i id="spin_hum_chart" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                             </div>
                             <!-- /.humidity chart -->
                         </div>
-
+                    
                     </div>
                     <div class="row">
                         <div class="col-12">
@@ -202,22 +206,24 @@
                                         <i class="fas fa-sun"></i> Luce
                                     </h3>
                                     <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                                                class="fa fa-minus"></i>
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fa fa-minus"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart">
                                         <canvas id="luxChart" style="
-                                      min-height: 250px;
-                                      height: 250px;
-                                      max-height: 250px;
-                                      max-width: 100%;
-                                    "></canvas>
+                                              min-height: 250px;
+                                              height: 250px;
+                                              max-height: 250px;
+                                              max-width: 100%;
+                                            "></canvas>
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
+                                <div id="overlay_lux_chart" class="overlay dark">
+                                    <i id="spin_lux_chart" class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                </div>
                             </div>
                             <!-- /.lux chart -->
                         </div>
@@ -367,6 +373,9 @@
 
                 // Update Curret Period Label and Charts
                 $('#period_txt').html(start.format('DD MMMM YYYY') + ' - ' + end.format('DD MMMM YYYY'));
+
+                load_chart()
+                
                 update_chart(charts, request, ChartOptions('day'), true);
             });
         });

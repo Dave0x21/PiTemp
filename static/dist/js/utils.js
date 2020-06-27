@@ -172,3 +172,12 @@ function set_currentValue(data){
     $('#overlay_pres').removeClass('overlay dark');
     $('#spin_pres').removeClass('fas fa-3x fa-sync-alt fa-spin');
 };
+
+function load_chart(){
+    $('#overlay_temp_chart').addClass('overlay dark');
+    $('spin_temp_chart').addClass('fas fa-3x fa-sync-alt fa-spin');
+    $('#overlay_hum_chart').addClass('overlay dark');
+    $('spin_hum_chart').addClass('fas fa-3x fa-sync-alt fa-spin');
+    $('#overlay_lux_chart').addClass('overlay dark');
+    $('spin_lux_chart').addClass('fas fa-3x fa-sync-alt fa-spin');
+};

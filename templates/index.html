@@ -386,7 +386,7 @@
     <script src="plugins/moment/moment.min.js"></script>
     <script src="plugins/chart.js/Chart.min.js"></script>
 
-    <script src="dist/js/utils.min.js"></script>
+    <script src="dist/js/utils.js"></script>
 
     <!-- Custom JS -->
     <script>
@@ -395,7 +395,7 @@
             // Set current value
             $.get('/api/current_readings', function (data) {
                 set_currentValue(data);
-                $('#trend').addClass(trend_icon(data.trend));
+                $('#trend').addClass(trend_icon(data.pressure_trend));
                 $("#pressure_icon").addClass(pressure_icon(data.pressure));
             }, 'json');
 

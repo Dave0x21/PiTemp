@@ -60,10 +60,8 @@ def dict_factory_array(cursor, row):
     global RESPONSE
 
     for idx, col in enumerate(cursor.description):
-        if col[0] not in RESPONSE:
-            RESPONSE[col[0]] = []
-
         RESPONSE[col[0]].append(row[idx])
+
     return RESPONSE
 
 def dict_factory_simple(cursor, row):
@@ -78,7 +76,9 @@ def get_query(measure, msg):
     elif measure == 'humidity':
         query = 'SELECT time, humidity '
     elif measure == 'light':
-        query = 'SELECT time, humidity '
+        query = 'SELECT time, light '
+    elif measure == 'pressure':
+        query = 'SELECT pressure '
     else:
         return 'Invalid request'
     
@@ -86,18 +86,23 @@ def get_query(measure, msg):
 
     return query
 
-def get_data_array(query):
+def get_data_array(query, measure):
     global RESPONSE
-    RESPONSE = {}
+    if measure == 'temperature':
+        measure = 'temp'
+    RESPONSE = {'time':[], measure:[]}
     
-    with sqlite3.connect(DB) as conn:
-        conn.row_factory = dict_factory_array
-        c = conn.cursor()
-        c.execute(query)
+    conn = sqlite3.connect(DB)
+    conn.row_factory = dict_factory_array
+    c = conn.cursor()
+    c.execute(query)
 
-        data = c.fetchall
+    data = c.fetchall()
 
-    return jsonify(data)
+ 
+    conn.close()
+
+    return jsonify(data[0])
 
 
 ################
@@ -127,11 +132,12 @@ def custom_view():
 def api_current_readings():
     query = 'select temp, humidity, light, pressure, trend as pressure_trend from pitemp order by id desc limit 1'
     
-    with sqlite3.connect(DB) as conn:
-        conn.row_factory = dict_factory_simple
-        c = conn.cursor()
-        c.execute(query)
-        data = c.fetchone()
+    conn = sqlite3.connect(DB)
+    conn.row_factory = dict_factory_simple
+    c = conn.cursor()
+    c.execute(query)
+    data = c.fetchone()
+    conn.close()
 
     return jsonify(data)
     
@@ -139,11 +145,11 @@ def api_current_readings():
 def api_last_24h(measure):
 
     query  = get_query(measure, 'FROM pitemp WHERE time >= datetime("now", "-24 hours", "localtime")')
-
+ 
     if query == 'Invalid request':
         return jsonify({'error': query})
     else:
-        return get_data_array(query)
+        return get_data_array(query, measure)
     
 
 @app.route("/api/day/<day>/<measure>")
@@ -153,7 +159,7 @@ def api_day(day, measure):
     if query == 'Invalid request':
         return jsonify({'error': query})
     else:
-        return get_data_array(query)
+        return get_data_array(query, measure)
 
 
 @app.route("/api/range/<start>/<end>/<measure>")
@@ -163,7 +169,7 @@ def api_range(start, end, measure):
     if query == 'Invalid request':
         return jsonify({'error': query})
     else:
-        return get_data_array(query)
+        return get_data_array(query, measure)
     
 
 @app.route("/static/<path:path>")

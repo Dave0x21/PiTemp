@@ -105,15 +105,15 @@ function calculate_table(arr){
         sum += arr[i];
     }
 
-    return {'media': sum / arr.length, 'min': Math.min.apply(null, arr), 'max': Math.max.apply(null, arr)}
+    return {'media': (sum / arr.length).toFixed(2), 'min': Math.min.apply(null, arr), 'max': Math.max.apply(null, arr)}
 }
 
 
 function update_chart(charts, api, chartOptions, destroy=false) {
     if (destroy){
-        charts.temp.destroy();
-        charts.hum.destroy();
-        charts.lux.destroy();
+        charts.temp.destroy;
+        charts.hum.destroy;
+        charts.lux.destroy;
     }
 
     $.get(`/api/${api}/temperature`, function(data){
@@ -128,7 +128,7 @@ function update_chart(charts, api, chartOptions, destroy=false) {
     }, 'json');
 
     $.get(`/api/${api}/humidity`, function(data){
-        var id ={'media': '#umid_temp', 'min': '#min_umid', 'max': '#max_umid'};
+        var id ={'media': '#media_hum', 'min': '#min_hum', 'max': '#max_hum'};
         var values = calculate_table(data.humidity);
 
         data.time = parse_time(data.time);
@@ -147,6 +147,11 @@ function update_chart(charts, api, chartOptions, destroy=false) {
         set_table(id, values);
         $('#overlay_lux_chart').removeClass('overlay dark');
         $('#spin_lux_chart').removeClass('fas fa-3x fa-sync-alt fa-spin');
+    }, 'json');
+    $.get(`/api/${api}/pressure`, function(data){
+        var id = {'media': '#media_pres', 'min': '#min_pres', 'max': '#max_pres'};
+	var values = calculate_table(data.pressure);
+	set_table(id, values);
     }, 'json');
 };
 
